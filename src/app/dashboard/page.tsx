@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/dashboard/project-card";
@@ -91,6 +91,11 @@ export default function DashboardPage() {
     setProjects(projects.map(p => p.id === updatedProject.id ? { ...p, ...updatedProject } : p));
   };
 
+  const deleteProject = async (projectId: string) => {
+    await deleteDoc(doc(db, "projects", projectId));
+    setProjects(projects.filter(p => p.id !== projectId));
+  };
+
 
   const filteredProjects = useMemo(() => {
     if (!filterType) {
@@ -138,7 +143,12 @@ export default function DashboardPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} onProjectUpdate={updateProject} />
+              <ProjectCard 
+                key={project.id} 
+                project={project} 
+                onProjectUpdate={updateProject}
+                onProjectDelete={deleteProject}
+              />
             ))}
           </div>
         )}

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { EditProjectDialog } from "./edit-project-dialog";
+import { DeleteProjectAlert } from "./delete-project-alert";
 
 const typeIcons: { [key: string]: React.ReactNode } = {
   "Novela": <Book className="h-4 w-4 text-muted-foreground" />,
@@ -35,10 +36,13 @@ function formatLastModified(date: any) {
 interface ProjectCardProps {
   project: Project;
   onProjectUpdate: (project: EditableProject) => void;
+  onProjectDelete: (projectId: string) => void;
 }
 
-export function ProjectCard({ project, onProjectUpdate }: ProjectCardProps) {
+export function ProjectCard({ project, onProjectUpdate, onProjectDelete }: ProjectCardProps) {
   const progress = project.goal > 0 ? (project.wordCount / project.goal) * 100 : 0;
+  
+  const stopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
     <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 group hover:shadow-lg hover:-translate-y-1">
@@ -54,26 +58,28 @@ export function ProjectCard({ project, onProjectUpdate }: ProjectCardProps) {
           />
         </Link>
          <div className="absolute top-2 right-2">
-            <EditProjectDialog project={project} onProjectUpdate={onProjectUpdate}>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-card/70 hover:bg-card">
-                            <MoreVertical className="h-4 w-4" />
-                            <span className="sr-only">Opciones del proyecto</span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                            <Edit className="mr-2 h-4 w-4"/>
-                            Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
-                            <Trash2 className="mr-2 h-4 w-4"/>
-                            Eliminar
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </EditProjectDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="h-8 w-8 rounded-full bg-card/70 hover:bg-card">
+                <MoreVertical className="h-4 w-4" />
+                <span className="sr-only">Opciones del proyecto</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={stopPropagation}>
+              <EditProjectDialog project={project} onProjectUpdate={onProjectUpdate}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Edit className="mr-2 h-4 w-4"/>
+                  Editar
+                </DropdownMenuItem>
+              </EditProjectDialog>
+              <DeleteProjectAlert onConfirmDelete={() => onProjectDelete(project.id)}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
+                  <Trash2 className="mr-2 h-4 w-4"/>
+                  Eliminar
+                </DropdownMenuItem>
+              </DeleteProjectAlert>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       <Link href={`/writer/${project.id}`} className="flex flex-col flex-grow">
