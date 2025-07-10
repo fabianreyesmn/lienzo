@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -49,11 +48,6 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/dashboard/settings" passHref>
-            <DropdownMenuItem>
-              Perfil
-            </DropdownMenuItem>
-          </Link>
           <Link href="/dashboard/settings" passHref>
             <DropdownMenuItem>
               Ajustes
