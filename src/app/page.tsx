@@ -40,11 +40,11 @@ export default function Home() {
                   <Label htmlFor="password-login">Contraseña</Label>
                   <Input id="password-login" type="password" required />
                 </div>
-                <Link href="/dashboard" passHref legacyBehavior>
-                  <Button type="submit" className="w-full">
+                <Button asChild type="submit" className="w-full">
+                  <Link href="/dashboard">
                     Entrar
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </form>
           </Card>
@@ -71,11 +71,11 @@ export default function Home() {
                   <Label htmlFor="password-register">Contraseña</Label>
                   <Input id="password-register" type="password" required />
                 </div>
-                <Link href="/dashboard" passHref legacyBehavior>
-                  <Button type="submit" className="w-full">
+                 <Button asChild type="submit" className="w-full">
+                  <Link href="/dashboard">
                     Crear Cuenta
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </CardContent>
             </form>
           </Card>
