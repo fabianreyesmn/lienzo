@@ -7,6 +7,10 @@ import {
   Home,
   Settings,
   Trash2,
+  Clapperboard,
+  Music,
+  Newspaper,
+  Notebook
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -73,6 +77,38 @@ export function SidebarContent() {
                        <Link href={{ pathname: '/dashboard', query: { type: 'Poesía' } }}>
                           <Feather />
                           Poesía
+                       </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Guiones" isActive={isActive("/dashboard", "Guion")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Guion' } }}>
+                          <Clapperboard />
+                          Guiones
+                       </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Cancioneros" isActive={isActive("/dashboard", "Cancionero")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Cancionero' } }}>
+                          <Music />
+                          Cancioneros
+                       </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Blogs / Ensayos" isActive={isActive("/dashboard", "Blog / Ensayos")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Blog / Ensayos' } }}>
+                          <Newspaper />
+                          Blogs / Ensayos
+                       </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Notas" isActive={isActive("/dashboard", "Notas")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Notas' } }}>
+                          <Notebook />
+                          Notas
                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
