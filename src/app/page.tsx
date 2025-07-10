@@ -106,7 +106,7 @@ export default function Home() {
                 <CardTitle className="font-headline">Crea tu cuenta</CardTitle>
                 <CardDescription>
                   Empieza tu viaje como escritor en un solo paso.
-                </CardDescription>
+                </Description>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
