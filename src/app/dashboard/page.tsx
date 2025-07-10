@@ -1,86 +1,72 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "firebase/firestore";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/dashboard/project-card";
 import { NewProjectDialog } from "@/components/dashboard/new-project-dialog";
 import { UserNav } from "@/components/dashboard/user-nav";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const initialProjects = [
-  {
-    id: "1",
-    title: "El Último Suspiro del Invierno",
-    type: "Novela",
-    wordCount: 54320,
-    goal: 100000,
-    lastModified: "Hace 2 horas",
-    coverHint: "fantasy landscape",
-  },
-  {
-    id: "2",
-    title: "Ecos en la Ciudad de Cristal",
-    type: "Poesía",
-    wordCount: 2150,
-    goal: 10000,
-    lastModified: "Ayer",
-    coverHint: "abstract city",
-  },
-  {
-    id: "3",
-    title: "Guion: Aurora",
-    type: "Guion",
-    wordCount: 12500,
-    goal: 25000,
-    lastModified: "Hace 3 días",
-    coverHint: "film set",
-  },
-  {
-    id: "4",
-    title: "Melodías de un Corazón Roto",
-    type: "Cancionero",
-    wordCount: 850,
-    goal: 5000,
-    lastModified: "La semana pasada",
-    coverHint: "guitar paper",
-  },
-  {
-    id: "5",
-    title: "Ensayos sobre el Tiempo",
-    type: "Blog / Ensayos",
-    wordCount: 5200,
-    goal: 20000,
-    lastModified: "Hace 2 semanas",
-    coverHint: "old library",
-  },
-  {
-    id: "6",
-    title: "Cuaderno de Ideas",
-    type: "Notas",
-    wordCount: 15300,
-    goal: 0,
-    lastModified: "Hace 1 mes",
-    coverHint: "messy notebook",
-  },
-];
+export interface Project {
+  id: string;
+  title: string;
+  type: string;
+  wordCount: number;
+  goal: number;
+  lastModified: any;
+  coverHint: string;
+  userId: string;
+}
 
-export type Project = (typeof initialProjects)[0];
+export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId'>;
 
 export default function DashboardPage() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const { user, loading: authLoading } = useAuth();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
 
-  const addProject = (project: Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint'>) => {
-    const newProject: Project = {
+  useEffect(() => {
+    if (user) {
+      const fetchProjects = async () => {
+        setLoadingProjects(true);
+        const q = query(
+          collection(db, "projects"), 
+          where("userId", "==", user.uid),
+          orderBy("lastModified", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const userProjects = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
+        setProjects(userProjects);
+        setLoadingProjects(false);
+      };
+      fetchProjects();
+    } else if (!authLoading) {
+      setProjects([]);
+      setLoadingProjects(false);
+    }
+  }, [user, authLoading]);
+
+  const addProject = async (project: NewProjectType) => {
+    if (!user) return;
+
+    const newProjectData = {
       ...project,
-      id: (projects.length + 1).toString(),
+      userId: user.uid,
       wordCount: 0,
       goal: 0,
-      lastModified: "Recién creado",
+      lastModified: serverTimestamp(),
       coverHint: "new project"
     };
-    setProjects([newProject, ...projects]);
+
+    const docRef = await addDoc(collection(db, "projects"), newProjectData);
+    
+    setProjects([{ id: docRef.id, ...newProjectData, lastModified: new Date() }, ...projects]);
   };
 
 
@@ -102,11 +88,30 @@ export default function DashboardPage() {
         </div>
       </header>
       <main className="flex-1 overflow-auto p-4 md:p-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        {loadingProjects || authLoading ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="flex flex-col space-y-3">
+                        <Skeleton className="h-[125px] w-full rounded-xl" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-[200px]" />
+                            <Skeleton className="h-4 w-[150px]" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        ) : projects.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+            <p className="text-lg mb-2">Aún no tienes proyectos.</p>
+            <p>¡Crea uno para empezar a escribir!</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {projects.map((project) => (
+              <ProjectCard key={project.id} project={project} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

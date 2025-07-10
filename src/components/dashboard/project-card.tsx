@@ -1,18 +1,12 @@
+
 import Image from "next/image";
 import { Book, Feather, Clapperboard, Music, Newspaper, Notebook } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-
-type Project = {
-  id: string;
-  title: string;
-  type: string;
-  wordCount: number;
-  goal: number;
-  lastModified: string;
-  coverHint: string;
-};
+import type { Project } from "@/app/dashboard/page";
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const typeIcons: { [key: string]: React.ReactNode } = {
   "Novela": <Book className="h-4 w-4 text-muted-foreground" />,
@@ -22,6 +16,13 @@ const typeIcons: { [key: string]: React.ReactNode } = {
   "Blog / Ensayos": <Newspaper className="h-4 w-4 text-muted-foreground" />,
   "Notas": <Notebook className="h-4 w-4 text-muted-foreground" />,
 };
+
+function formatLastModified(date: any) {
+  if (!date) return 'Desconocido';
+  // Firestore Timestamps can be converted to JS Date objects
+  const jsDate = date.toDate ? date.toDate() : new Date(date);
+  return formatDistanceToNow(jsDate, { addSuffix: true, locale: es });
+}
 
 export function ProjectCard({ project }: { project: Project }) {
   const progress = project.goal > 0 ? (project.wordCount / project.goal) * 100 : 0;
@@ -46,7 +47,7 @@ export function ProjectCard({ project }: { project: Project }) {
           </div>
           <CardTitle className="text-lg font-headline leading-tight mb-2">{project.title}</CardTitle>
           <CardDescription className="text-xs">
-            Modificado: {project.lastModified}
+            Modificado: {formatLastModified(project.lastModified)}
           </CardDescription>
         </CardContent>
         <CardFooter className="p-4 pt-0">

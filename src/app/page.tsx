@@ -1,12 +1,64 @@
-import Link from 'next/link';
+
+"use client";
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  
+  const [loading, setLoading] = useState(false);
+
+  const { signUp, signIn } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await signIn(loginEmail, loginPassword);
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error al iniciar sesión",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await signUp(registerEmail, registerPassword, registerName);
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error en el registro",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
       <div className="flex flex-col items-center justify-center text-center">
@@ -24,7 +76,7 @@ export default function Home() {
         </TabsList>
         <TabsContent value="login">
           <Card>
-            <form>
+            <form onSubmit={handleLogin}>
               <CardHeader>
                 <CardTitle className="font-headline">Bienvenido de vuelta</CardTitle>
                 <CardDescription>
@@ -34,16 +86,14 @@ export default function Home() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="email-login">Email</Label>
-                  <Input id="email-login" type="email" placeholder="email@ejemplo.com" required />
+                  <Input id="email-login" type="email" placeholder="email@ejemplo.com" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password-login">Contraseña</Label>
-                  <Input id="password-login" type="password" required />
+                  <Input id="password-login" type="password" required value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
                 </div>
-                <Button asChild type="submit" className="w-full">
-                  <Link href="/dashboard">
-                    Entrar
-                  </Link>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Entrando...' : 'Entrar'}
                 </Button>
               </CardContent>
             </form>
@@ -51,7 +101,7 @@ export default function Home() {
         </TabsContent>
         <TabsContent value="register">
           <Card>
-            <form>
+            <form onSubmit={handleRegister}>
               <CardHeader>
                 <CardTitle className="font-headline">Crea tu cuenta</CardTitle>
                 <CardDescription>
@@ -61,20 +111,18 @@ export default function Home() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name-register">Nombre</Label>
-                  <Input id="name-register" placeholder="Tu nombre" required />
+                  <Input id="name-register" placeholder="Tu nombre" required value={registerName} onChange={(e) => setRegisterName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email-register">Email</Label>
-                  <Input id="email-register" type="email" placeholder="email@ejemplo.com" required />
+                  <Input id="email-register" type="email" placeholder="email@ejemplo.com" required value={registerEmail} onChange={(e) => setRegisterEmail(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password-register">Contraseña</Label>
-                  <Input id="password-register" type="password" required />
+                  <Input id="password-register" type="password" required value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} />
                 </div>
-                 <Button asChild type="submit" className="w-full">
-                  <Link href="/dashboard">
-                    Crear Cuenta
-                  </Link>
+                 <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Creando...' : 'Crear Cuenta'}
                 </Button>
               </CardContent>
             </form>
