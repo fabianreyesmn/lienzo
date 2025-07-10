@@ -24,62 +24,60 @@ export default function Home() {
         </TabsList>
         <TabsContent value="login">
           <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Bienvenido de vuelta</CardTitle>
-              <CardDescription>
-                Accede a tu escritorio para continuar tu obra.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email-login">Email</Label>
-                <Input id="email-login" type="email" placeholder="email@ejemplo.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password-login">Contraseña</Label>
-                <Input id="password-login" type="password" required />
-              </div>
-              <Link href="/dashboard" className="w-full">
-                <Button className="w-full">
-                  Entrar
-                </Button>
-              </Link>
-              <Button variant="outline" className="w-full">
-                Iniciar sesión con Google
-              </Button>
-            </CardContent>
+            <form>
+              <CardHeader>
+                <CardTitle className="font-headline">Bienvenido de vuelta</CardTitle>
+                <CardDescription>
+                  Accede a tu escritorio para continuar tu obra.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email-login">Email</Label>
+                  <Input id="email-login" type="email" placeholder="email@ejemplo.com" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password-login">Contraseña</Label>
+                  <Input id="password-login" type="password" required />
+                </div>
+                <Link href="/dashboard" passHref legacyBehavior>
+                  <Button type="submit" className="w-full">
+                    Entrar
+                  </Button>
+                </Link>
+              </CardContent>
+            </form>
           </Card>
         </TabsContent>
         <TabsContent value="register">
           <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Crea tu cuenta</CardTitle>
-              <CardDescription>
-                Empieza tu viaje como escritor en un solo paso.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name-register">Nombre</Label>
-                <Input id="name-register" placeholder="Tu nombre" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email-register">Email</Label>
-                <Input id="email-register" type="email" placeholder="email@ejemplo.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password-register">Contraseña</Label>
-                <Input id="password-register" type="password" required />
-              </div>
-              <Link href="/dashboard" className="w-full">
-                <Button className="w-full">
-                  Crear Cuenta
-                </Button>
-              </Link>
-              <Button variant="outline" className="w-full">
-                Registrarse con Google
-              </Button>
-            </CardContent>
+            <form>
+              <CardHeader>
+                <CardTitle className="font-headline">Crea tu cuenta</CardTitle>
+                <CardDescription>
+                  Empieza tu viaje como escritor en un solo paso.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name-register">Nombre</Label>
+                  <Input id="name-register" placeholder="Tu nombre" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email-register">Email</Label>
+                  <Input id="email-register" type="email" placeholder="email@ejemplo.com" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password-register">Contraseña</Label>
+                  <Input id="password-register" type="password" required />
+                </div>
+                <Link href="/dashboard" passHref legacyBehavior>
+                  <Button type="submit" className="w-full">
+                    Crear Cuenta
+                  </Button>
+                </Link>
+              </CardContent>
+            </form>
           </Card>
         </TabsContent>
       </Tabs>

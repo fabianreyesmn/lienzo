@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useState } from "react";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/dashboard/project-card";
@@ -5,7 +9,7 @@ import { NewProjectDialog } from "@/components/dashboard/new-project-dialog";
 import { UserNav } from "@/components/dashboard/user-nav";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-const projects = [
+const initialProjects = [
   {
     id: "1",
     title: "El Último Suspiro del Invierno",
@@ -62,7 +66,24 @@ const projects = [
   },
 ];
 
+export type Project = (typeof initialProjects)[0];
+
 export default function DashboardPage() {
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
+
+  const addProject = (project: Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint'>) => {
+    const newProject: Project = {
+      ...project,
+      id: (projects.length + 1).toString(),
+      wordCount: 0,
+      goal: 0,
+      lastModified: "Recién creado",
+      coverHint: "new project"
+    };
+    setProjects([newProject, ...projects]);
+  };
+
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
@@ -71,7 +92,7 @@ export default function DashboardPage() {
           <h1 className="font-headline text-lg font-semibold">Mi Escritorio</h1>
         </div>
         <div className="flex items-center gap-4">
-          <NewProjectDialog>
+          <NewProjectDialog onProjectCreate={addProject}>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
               Nuevo Proyecto
