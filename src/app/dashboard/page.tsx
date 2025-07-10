@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, serverTimestamp, orderBy, updateDoc, doc } from "firebase/firestore";
 import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/dashboard/project-card";
@@ -26,9 +27,13 @@ export interface Project {
 }
 
 export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId' | 'content'>;
+export type EditableProject = Pick<Project, 'id' | 'title' | 'goal'>;
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const filterType = searchParams.get('type');
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
 
@@ -60,15 +65,14 @@ export default function DashboardPage() {
       ...project,
       userId: user.uid,
       wordCount: 0,
-      goal: 0,
+      goal: 10000,
       lastModified: serverTimestamp(),
-      coverHint: "new project",
+      coverHint: project.type,
       content: ""
     };
 
     const docRef = await addDoc(collection(db, "projects"), newProjectData);
     
-    // Optimistically update UI
     const tempNewProject: Project = {
       ...newProjectData,
       id: docRef.id,
@@ -77,13 +81,31 @@ export default function DashboardPage() {
     setProjects([tempNewProject, ...projects]);
   };
 
+  const updateProject = async (updatedProject: EditableProject) => {
+    const projectRef = doc(db, "projects", updatedProject.id);
+    await updateDoc(projectRef, {
+      title: updatedProject.title,
+      goal: updatedProject.goal,
+    });
+    
+    setProjects(projects.map(p => p.id === updatedProject.id ? { ...p, ...updatedProject } : p));
+  };
+
+
+  const filteredProjects = useMemo(() => {
+    if (!filterType) {
+      return projects;
+    }
+    return projects.filter(p => p.type === filterType);
+  }, [projects, filterType]);
+
 
   return (
     <div className="flex flex-col h-full">
       <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
         <SidebarTrigger className="md:hidden"/>
         <div className="flex-1">
-          <h1 className="font-headline text-lg font-semibold">Mi Escritorio</h1>
+          <h1 className="font-headline text-lg font-semibold">{filterType ? `Proyectos de ${filterType}` : 'Mi Escritorio'}</h1>
         </div>
         <div className="flex items-center gap-4">
           <NewProjectDialog onProjectCreate={addProject}>
@@ -108,15 +130,15 @@ export default function DashboardPage() {
                     </div>
                 ))}
             </div>
-        ) : projects.length === 0 ? (
+        ) : filteredProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-            <p className="text-lg mb-2">Aún no tienes proyectos.</p>
+            <p className="text-lg mb-2">{filterType ? `No tienes proyectos de "${filterType}".` : 'Aún no tienes proyectos.'}</p>
             <p>¡Crea uno para empezar a escribir!</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
+            {filteredProjects.map((project) => (
+              <ProjectCard key={project.id} project={project} onProjectUpdate={updateProject} />
             ))}
           </div>
         )}

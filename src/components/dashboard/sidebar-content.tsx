@@ -9,8 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   SidebarHeader,
   SidebarMenu,
@@ -26,9 +25,16 @@ import { Logo } from "@/components/logo";
 
 export function SidebarContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const typeFilter = searchParams.get('type');
 
-  const isActive = (path: string) => {
-    return pathname === path;
+  const isActive = (path: string, filter?: string | null) => {
+    const isPathActive = pathname === path;
+    const isFilterActive = typeFilter === filter;
+    if (filter === null) { // For "Escritorio" which has no filter
+        return isPathActive && !typeFilter;
+    }
+    return isPathActive && isFilterActive;
   };
 
   return (
@@ -42,7 +48,7 @@ export function SidebarContent() {
       <Content>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard")} tooltip="Escritorio">
+            <SidebarMenuButton asChild isActive={isActive("/dashboard", null)} tooltip="Escritorio">
               <Link href="/dashboard">
                 <Home />
                 Escritorio
@@ -55,16 +61,16 @@ export function SidebarContent() {
             <SidebarGroupLabel>Proyectos</SidebarGroupLabel>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Novelas">
-                       <Link href="#">
+                    <SidebarMenuButton asChild tooltip="Novelas" isActive={isActive("/dashboard", "Novela")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Novela' } }}>
                           <Book />
                           Novelas
                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Poesía">
-                       <Link href="#">
+                    <SidebarMenuButton asChild tooltip="Poesía" isActive={isActive("/dashboard", "Poesía")}>
+                       <Link href={{ pathname: '/dashboard', query: { type: 'Poesía' } }}>
                           <Feather />
                           Poesía
                        </Link>
