@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -41,10 +42,12 @@ export function SidebarContent() {
       <Content>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/dashboard" legacyBehavior passHref>
-              <SidebarMenuButton isActive={isActive("/dashboard")} tooltip="Escritorio">
-                <Home />
-                Escritorio
+            <Link href="/dashboard" passHref>
+              <SidebarMenuButton asChild isActive={isActive("/dashboard")} tooltip="Escritorio">
+                <Link href="/dashboard">
+                  <Home />
+                  Escritorio
+                </Link>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
@@ -54,18 +57,22 @@ export function SidebarContent() {
             <SidebarGroupLabel>Proyectos</SidebarGroupLabel>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="#" legacyBehavior passHref>
-                        <SidebarMenuButton tooltip="Novelas">
-                            <Book />
-                            Novelas
+                    <Link href="#" passHref>
+                        <SidebarMenuButton asChild tooltip="Novelas">
+                           <Link href="#">
+                              <Book />
+                              Novelas
+                           </Link>
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <Link href="#" legacyBehavior passHref>
-                        <SidebarMenuButton tooltip="Poesía">
-                            <Feather />
-                            Poesía
+                    <Link href="#" passHref>
+                        <SidebarMenuButton asChild tooltip="Poesía">
+                           <Link href="#">
+                              <Feather />
+                              Poesía
+                           </Link>
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
@@ -77,18 +84,22 @@ export function SidebarContent() {
         <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="#" legacyBehavior passHref>
-              <SidebarMenuButton tooltip="Ajustes">
-                <Settings />
-                Ajustes
+            <Link href="#" passHref>
+              <SidebarMenuButton asChild tooltip="Ajustes">
+                <Link href="#">
+                  <Settings />
+                  Ajustes
+                </Link>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="#" legacyBehavior passHref>
-              <SidebarMenuButton tooltip="Papelera">
-                <Trash2 />
-                Papelera
+            <Link href="#" passHref>
+              <SidebarMenuButton asChild tooltip="Papelera">
+                <Link href="#">
+                  <Trash2 />
+                  Papelera
+                </Link>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
