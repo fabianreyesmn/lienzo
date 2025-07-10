@@ -28,7 +28,7 @@ export function ProjectCard({ project }: { project: Project }) {
   const progress = project.goal > 0 ? (project.wordCount / project.goal) * 100 : 0;
 
   return (
-    <Link href="#" className="group">
+    <Link href={`/writer/${project.id}`} className="group">
       <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <CardHeader className="p-0 relative">
           <Image

@@ -22,9 +22,10 @@ export interface Project {
   lastModified: any;
   coverHint: string;
   userId: string;
+  content: string;
 }
 
-export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId'>;
+export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId' | 'content'>;
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -61,12 +62,19 @@ export default function DashboardPage() {
       wordCount: 0,
       goal: 0,
       lastModified: serverTimestamp(),
-      coverHint: "new project"
+      coverHint: "new project",
+      content: ""
     };
 
     const docRef = await addDoc(collection(db, "projects"), newProjectData);
     
-    setProjects([{ id: docRef.id, ...newProjectData, lastModified: new Date() }, ...projects]);
+    // Optimistically update UI
+    const tempNewProject: Project = {
+      ...newProjectData,
+      id: docRef.id,
+      lastModified: new Date(),
+    };
+    setProjects([tempNewProject, ...projects]);
   };
 
 
