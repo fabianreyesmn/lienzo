@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -48,12 +49,16 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Perfil
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            Ajustes
-          </DropdownMenuItem>
+          <Link href="/dashboard/settings" passHref>
+            <DropdownMenuItem>
+              Perfil
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/dashboard/settings" passHref>
+            <DropdownMenuItem>
+              Ajustes
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut}>
