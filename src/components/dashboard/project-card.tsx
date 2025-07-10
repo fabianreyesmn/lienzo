@@ -1,5 +1,4 @@
 
-import Image from "next/image";
 import { Book, Feather, Clapperboard, Music, Newspaper, Notebook, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,6 +15,7 @@ import {
 import { Button } from "../ui/button";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { DeleteProjectAlert } from "./delete-project-alert";
+import { GenerativeCover } from "./generative-cover";
 
 const typeIcons: { [key: string]: React.ReactNode } = {
   "Novela": <Book className="h-4 w-4 text-muted-foreground" />,
@@ -48,14 +48,7 @@ export function ProjectCard({ project, onProjectUpdate, onProjectDelete }: Proje
     <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 group hover:shadow-lg hover:-translate-y-1">
       <CardHeader className="p-0 relative">
         <Link href={`/writer/${project.id}`} className="block">
-          <Image
-            src={`https://placehold.co/400x250.png`}
-            data-ai-hint={project.coverHint}
-            alt={`Portada de ${project.title}`}
-            width={400}
-            height={250}
-            className="w-full h-32 object-cover"
-          />
+           <GenerativeCover projectId={project.id} />
         </Link>
          <div className="absolute top-2 right-2">
           <DropdownMenu>
