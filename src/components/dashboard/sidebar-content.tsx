@@ -42,14 +42,12 @@ export function SidebarContent() {
       <Content>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/dashboard" passHref>
-              <SidebarMenuButton asChild isActive={isActive("/dashboard")} tooltip="Escritorio">
-                <Link href="/dashboard">
-                  <Home />
-                  Escritorio
-                </Link>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild isActive={isActive("/dashboard")} tooltip="Escritorio">
+              <Link href="/dashboard">
+                <Home />
+                Escritorio
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
         
@@ -57,24 +55,20 @@ export function SidebarContent() {
             <SidebarGroupLabel>Proyectos</SidebarGroupLabel>
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <Link href="#" passHref>
-                        <SidebarMenuButton asChild tooltip="Novelas">
-                           <Link href="#">
-                              <Book />
-                              Novelas
-                           </Link>
-                        </SidebarMenuButton>
-                    </Link>
+                    <SidebarMenuButton asChild tooltip="Novelas">
+                       <Link href="#">
+                          <Book />
+                          Novelas
+                       </Link>
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <Link href="#" passHref>
-                        <SidebarMenuButton asChild tooltip="Poesía">
-                           <Link href="#">
-                              <Feather />
-                              Poesía
-                           </Link>
-                        </SidebarMenuButton>
-                    </Link>
+                    <SidebarMenuButton asChild tooltip="Poesía">
+                       <Link href="#">
+                          <Feather />
+                          Poesía
+                       </Link>
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarGroup>
@@ -84,24 +78,20 @@ export function SidebarContent() {
         <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="#" passHref>
-              <SidebarMenuButton asChild tooltip="Ajustes">
-                <Link href="#">
-                  <Settings />
-                  Ajustes
-                </Link>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Ajustes">
+              <Link href="#">
+                <Settings />
+                Ajustes
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="#" passHref>
-              <SidebarMenuButton asChild tooltip="Papelera">
-                <Link href="#">
-                  <Trash2 />
-                  Papelera
-                </Link>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Papelera">
+              <Link href="#">
+                <Trash2 />
+                Papelera
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
