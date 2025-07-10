@@ -24,9 +24,10 @@ export interface Project {
   coverHint: string;
   userId: string;
   content: string;
+  inTrash: boolean;
 }
 
-export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId' | 'content'>;
+export type NewProjectType = Omit<Project, 'id' | 'lastModified' | 'wordCount' | 'goal' | 'coverHint' | 'userId' | 'content' | 'inTrash'>;
 export type EditableProject = Pick<Project, 'id' | 'title' | 'goal'>;
 
 export default function DashboardPage() {
@@ -44,6 +45,7 @@ export default function DashboardPage() {
         const q = query(
           collection(db, "projects"), 
           where("userId", "==", user.uid),
+          where("inTrash", "==", false),
           orderBy("lastModified", "desc")
         );
         const querySnapshot = await getDocs(q);
@@ -68,7 +70,8 @@ export default function DashboardPage() {
       goal: 10000,
       lastModified: serverTimestamp(),
       coverHint: project.type,
-      content: ""
+      content: "",
+      inTrash: false
     };
 
     const docRef = await addDoc(collection(db, "projects"), newProjectData);
@@ -92,7 +95,10 @@ export default function DashboardPage() {
   };
 
   const deleteProject = async (projectId: string) => {
-    await deleteDoc(doc(db, "projects", projectId));
+    const projectRef = doc(db, "projects", projectId);
+    await updateDoc(projectRef, {
+      inTrash: true,
+    });
     setProjects(projects.filter(p => p.id !== projectId));
   };
 

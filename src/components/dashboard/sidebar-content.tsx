@@ -34,6 +34,9 @@ export function SidebarContent() {
 
   const isActive = (path: string, filter?: string | null) => {
     const isPathActive = pathname === path;
+    if (path !== '/dashboard') {
+      return isPathActive;
+    }
     const isFilterActive = typeFilter === filter;
     if (filter === null) { // For "Escritorio" which has no filter
         return isPathActive && !typeFilter;
@@ -120,16 +123,16 @@ export function SidebarContent() {
         <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Ajustes">
-              <Link href="#">
+            <SidebarMenuButton asChild tooltip="Ajustes" isActive={isActive("/dashboard/settings")}>
+              <Link href="/dashboard/settings">
                 <Settings />
                 Ajustes
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Papelera">
-              <Link href="#">
+            <SidebarMenuButton asChild tooltip="Papelera" isActive={isActive("/dashboard/trash")}>
+              <Link href="/dashboard/trash">
                 <Trash2 />
                 Papelera
               </Link>

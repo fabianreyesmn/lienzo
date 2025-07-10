@@ -68,7 +68,7 @@ export function ProjectCard({ project, onProjectUpdate, onProjectDelete }: Proje
               <DeleteProjectAlert onConfirmDelete={() => onProjectDelete(project.id)}>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive-foreground focus:bg-destructive">
                   <Trash2 className="mr-2 h-4 w-4"/>
-                  Eliminar
+                  Enviar a la papelera
                 </DropdownMenuItem>
               </DeleteProjectAlert>
             </DropdownMenuContent>
