@@ -18,7 +18,7 @@ interface ProjectData {
     content: string;
     userId: string;
 }
-//
+
 export default function WriterPage() {
     const { id: projectId } = useParams<{ id: string }>();
     const { user, loading: authLoading } = useAuth();
