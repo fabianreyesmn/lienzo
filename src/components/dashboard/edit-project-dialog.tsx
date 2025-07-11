@@ -40,7 +40,7 @@ export function EditProjectDialog({ children, project, onProjectUpdate }: EditPr
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-md" onInteractOutside={(e) => { e.preventDefault(); e.stopPropagation(); }}>
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl">Editar Proyecto</DialogTitle>
           <DialogDescription>

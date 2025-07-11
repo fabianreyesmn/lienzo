@@ -89,15 +89,17 @@ export default function DashboardPage() {
     await updateDoc(projectRef, {
       title: updatedProject.title,
       goal: updatedProject.goal,
+      lastModified: serverTimestamp(),
     });
     
-    setProjects(projects.map(p => p.id === updatedProject.id ? { ...p, ...updatedProject } : p));
+    setProjects(projects.map(p => p.id === updatedProject.id ? { ...p, ...updatedProject, lastModified: new Date() } : p));
   };
 
   const deleteProject = async (projectId: string) => {
     const projectRef = doc(db, "projects", projectId);
     await updateDoc(projectRef, {
       inTrash: true,
+      lastModified: serverTimestamp()
     });
     setProjects(projects.filter(p => p.id !== projectId));
   };
