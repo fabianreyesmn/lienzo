@@ -1,0 +1,13 @@
+# Configuración para Netlify
+# Documentación: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Comando para construir el sitio
+  command = "next build"
+  
+  # Directorio a publicar. Next.js lo genera en ".next"
+  publish = ".next"
+
+[[plugins]]
+  # Plugin esencial para que Next.js funcione correctamente en Netlify
+  package = "@netlify/plugin-nextjs"
