@@ -33,7 +33,9 @@ const findStressedVowelIndex = (word: string): number => {
 
     // 2. Word ends in vowel, 'n', or 's' -> stressed on the second to last syllable (grave/llana)
     const lastChar = normalized.slice(-1);
-    if (vowels.includes(lastChar.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || lastChar === 'n' || lastChar === 's') {
+    const lastCharIsVowelNS = vowels.includes(lastChar.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || lastChar === 'n' || lastChar === 's';
+    
+    if (word.length > 1 && lastCharIsVowelNS) {
         let vowelCount = 0;
         for (let i = original.length - 1; i >= 0; i--) {
             if (vowels.includes(original[i])) {
@@ -41,17 +43,11 @@ const findStressedVowelIndex = (word: string): number => {
                 if (vowelCount === 2) return i;
             }
         }
-        // If only one syllable, it's stressed
-        for (let i = original.length - 1; i >= 0; i--) {
-             if (vowels.includes(original[i])) return i;
-        }
-
-    } 
-    // 3. Word ends in a consonant (not 'n' or 's') -> stressed on the last syllable (aguda)
-    else {
-        for (let i = original.length - 1; i >= 0; i--) {
-            if (vowels.includes(original[i])) return i;
-        }
+    }
+    
+    // 3. Otherwise -> stressed on the last syllable (aguda)
+    for (let i = original.length - 1; i >= 0; i--) {
+        if (vowels.includes(original[i])) return i;
     }
     
     return -1; // Fallback
@@ -93,15 +89,17 @@ const doWordsRhyme = (word1: string, word2: string): boolean => {
 export const getRhymeScheme = (text: string): AnalyzedLine[] => {
     const lines = text.split('\n');
     const lastWords = lines.map(getLastWord);
-    const rhymeGroups: { representative: string, label: string }[] = [];
     const rhymeLabels = new Array(lines.length).fill("");
+    const rhymeGroups: { representative: string; label: string }[] = [];
 
     for (let i = 0; i < lastWords.length; i++) {
         const currentWord = lastWords[i];
-        if (!currentWord || rhymeLabels[i]) continue;
+        if (!currentWord || rhymeLabels[i]) {
+            continue;
+        }
 
         let foundGroup = false;
-        // Intenta encontrar un grupo de rima existente
+        // Check against existing rhyme groups
         for (const group of rhymeGroups) {
             if (doWordsRhyme(currentWord, group.representative)) {
                 rhymeLabels[i] = group.label;
@@ -110,25 +108,13 @@ export const getRhymeScheme = (text: string): AnalyzedLine[] => {
             }
         }
 
-        // Si no se encontró grupo, crea uno nuevo
+        // If no group was found, create a new one
         if (!foundGroup) {
             const newLabel = String.fromCharCode(65 + rhymeGroups.length);
             rhymeGroups.push({ representative: currentWord, label: newLabel });
             rhymeLabels[i] = newLabel;
         }
     }
-    
-    // Segunda pasada para asignar etiquetas a palabras que riman con nuevos grupos
-    for (let i = 0; i < lastWords.length; i++) {
-        if (!lastWords[i] || rhymeLabels[i]) continue;
-         for (const group of rhymeGroups) {
-             if (doWordsRhyme(lastWords[i], group.representative)) {
-                 rhymeLabels[i] = group.label;
-                 break;
-             }
-         }
-    }
-
 
     return lines.map((line, index) => ({
         text: line,
