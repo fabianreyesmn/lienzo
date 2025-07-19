@@ -6,21 +6,19 @@ import { countSyllables } from "@/lib/syllable-counter";
 import { Feather } from "lucide-react";
 
 interface SyllableCounterProps {
-    text: string;
+    lineText: string;
 }
 
-export function SyllableCounter({ text }: SyllableCounterProps) {
+export function SyllableCounter({ lineText }: SyllableCounterProps) {
     const [syllableCount, setSyllableCount] = useState(0);
 
     useEffect(() => {
-        const lines = text.split('\n');
-        const lastLine = lines[lines.length - 1] || "";
-        const count = countSyllables(lastLine);
+        const count = countSyllables(lineText);
         setSyllableCount(count);
-    }, [text]);
+    }, [lineText]);
 
     return (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground" title="Contador de sílabas del último verso">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground" title="Contador de sílabas del verso actual">
             <Feather className="h-4 w-4" />
             <span>{syllableCount}</span>
         </div>

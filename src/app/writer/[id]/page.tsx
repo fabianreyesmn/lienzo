@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
@@ -18,7 +18,7 @@ interface ProjectData {
     title: string;
     content: string;
     userId: string;
-    type: string; // <-- Add type here
+    type: string;
 }
 
 export default function WriterPage() {
@@ -29,13 +29,32 @@ export default function WriterPage() {
 
     const [project, setProject] = useState<ProjectData | null>(null);
     const [content, setContent] = useState("");
+    const [currentLineText, setCurrentLineText] = useState("");
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
 
     const getWordCount = (text: string) => {
         if (!text.trim()) return 0;
         return text.trim().split(/\s+/).length;
     };
+    
+    const updateCurrentLine = () => {
+        if (textareaRef.current) {
+            const { value, selectionStart } = textareaRef.current;
+            const lines = value.split('\n');
+            let charCount = 0;
+            for (const line of lines) {
+                charCount += line.length + 1; // +1 for the newline character
+                if (selectionStart < charCount) {
+                    setCurrentLineText(line);
+                    return;
+                }
+            }
+        }
+    };
+
 
     const fetchProject = useCallback(async () => {
         if (!user || !projectId) return;
@@ -48,7 +67,9 @@ export default function WriterPage() {
                 const projectData = projectSnap.data() as ProjectData;
                 if (projectData.userId === user.uid) {
                     setProject(projectData);
-                    setContent(projectData.content || "");
+                    const initialContent = projectData.content || "";
+                    setContent(initialContent);
+                    setCurrentLineText(initialContent.split('\n')[0] || "");
                 } else {
                     toast({
                         variant: "destructive",
@@ -141,7 +162,7 @@ export default function WriterPage() {
                     <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    {project.type === "Poesía" && <SyllableCounter text={content} />}
+                    {project.type === "Poesía" && <SyllableCounter lineText={currentLineText} />}
                     <Button onClick={handleSave} disabled={isSaving}>
                         <Save className="mr-2 h-4 w-4" />
                         {isSaving ? "Guardando..." : "Guardar"}
@@ -150,10 +171,16 @@ export default function WriterPage() {
             </header>
             <main className="flex-1 overflow-auto">
                 <Textarea
+                    ref={textareaRef}
                     placeholder="Empieza a escribir tu historia aquí..."
                     className="w-full h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-4 md:p-8 text-base lg:text-lg !bg-background"
                     value={content}
-                    onChange={(e) => setContent(e.target.value)}
+                    onChange={(e) => {
+                        setContent(e.target.value);
+                        updateCurrentLine();
+                    }}
+                    onKeyUp={updateCurrentLine}
+                    onClick={updateCurrentLine}
                 />
             </main>
         </div>
