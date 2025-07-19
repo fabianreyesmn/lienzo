@@ -212,6 +212,7 @@ export default function WriterPage() {
                 return <NoteToolsPanel
                     {...panelProps}
                     editorContent={content}
+                    onContentChange={setContent}
                 />;
             default:
                 return null;
