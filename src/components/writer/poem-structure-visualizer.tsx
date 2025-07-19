@@ -33,7 +33,7 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
 
     }, [content]);
 
-    const chartInternalHeight = Math.max(150, chartData.length * 35);
+    const chartHeight = Math.max(150, chartData.length * 35);
 
     return (
         <Card className="bg-background/50 overflow-hidden">
@@ -43,19 +43,19 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
                     {hasSelection ? "Visualización de la estrofa seleccionada." : "Visualización de todo el poema."}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="pl-2 pr-4 pt-0">
+            <CardContent className="pl-0 pr-4 pt-0">
                 {chartData.length > 0 ? (
-                     <ScrollArea className="h-[200px]">
+                     <ScrollArea className="h-[150px]">
                         <ChartContainer 
                             config={chartConfig} 
                             className="w-full" 
-                            style={{ height: `${chartInternalHeight}px` }}
+                            style={{ height: `${chartHeight}px` }}
                         >
                             <BarChart
                                 accessibilityLayer
                                 data={chartData}
                                 layout="vertical"
-                                margin={{ left: 10, top: 5, right: 10, bottom: 5 }}
+                                margin={{ left: 0, right: 10, top: 5, bottom: 5 }}
                             >
                                 <XAxis type="number" hide />
                                 <YAxis
