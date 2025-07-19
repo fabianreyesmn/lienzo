@@ -7,6 +7,7 @@ import { ChordProgressionGenerator } from "./chord-progression-generator";
 import { Separator } from "../ui/separator";
 import { SongStructureAssistant } from "./song-structure-assistant";
 import { MetricsAnalyzer } from "./metrics-analyzer";
+import { RhymeDictionary } from "./rhyme-dictionary";
 
 interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
@@ -42,6 +43,9 @@ export function SongwritingToolsPanel({ editorContent, selectedText, onContentCh
 
                     <Separator />
                     <ChordProgressionGenerator />
+
+                    <Separator />
+                    <RhymeDictionary />
                  </div>
             </ScrollArea>
         </aside>

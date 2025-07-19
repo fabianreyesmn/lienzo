@@ -17,7 +17,8 @@ const PoetrySuggestionsInputSchema = z.object({
 export type PoetrySuggestionsInput = z.infer<typeof PoetrySuggestionsInputSchema>;
 
 const PoetrySuggestionsOutputSchema = z.object({
-  rhymes: z.array(z.string()).describe('A list of words that rhyme with the input word. Should be relevant and creative.'),
+  rhymes: z.array(z.string()).describe('A list of words that have a perfect rhyme with the input word.'),
+  slantRhymes: z.array(z.string()).describe('A list of words that have a slant (or assonant) rhyme with the input word. In Spanish, this means only the vowels match from the last stressed vowel.'),
   synonyms: z.array(z.string()).describe('A list of synonyms for the input word.'),
 });
 export type PoetrySuggestionsOutput = z.infer<typeof PoetrySuggestionsOutputSchema>;
@@ -30,10 +31,13 @@ const prompt = ai.definePrompt({
   name: 'poetrySuggestionsPrompt',
   input: { schema: PoetrySuggestionsInputSchema },
   output: { schema: PoetrySuggestionsOutputSchema },
-  prompt: `You are a poetry assistant. Your task is to provide a list of rhymes and synonyms for the given word.
-The suggestions should be suitable for poetry, avoiding overly technical or obscure words unless they fit a creative context.
-For the word "{{word}}", provide a list of rhymes and a list of synonyms.
-Generate at least 5 rhymes and 5 synonyms if possible.
+  prompt: `You are a poetry assistant. Your task is to provide a list of rhymes, slant rhymes, and synonyms for the given word.
+The suggestions should be suitable for poetry and songwriting, avoiding overly technical or obscure words.
+For the word "{{word}}", provide:
+1. A list of perfect rhymes (rimas consonantes).
+2. A list of slant rhymes (rimas imperfectas o asonantes).
+3. A list of synonyms.
+Generate at least 5 of each if possible.
 All output must be in Spanish.
 `,
 });
