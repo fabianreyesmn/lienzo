@@ -4,10 +4,15 @@
 import { Music } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChordProgressionGenerator } from "./chord-progression-generator";
+import { Separator } from "../ui/separator";
+import { SongStructureAssistant } from "./song-structure-assistant";
 
-interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {}
+interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
+    editorContent: string;
+    onContentChange: (newContent: string) => void;
+}
 
-export function SongwritingToolsPanel(props : SongwritingToolsPanelProps) {
+export function SongwritingToolsPanel({ editorContent, onContentChange, ...props } : SongwritingToolsPanelProps) {
 
     return (
         <aside {...props} className="border-l bg-card h-full flex flex-col shrink-0">
@@ -21,7 +26,8 @@ export function SongwritingToolsPanel(props : SongwritingToolsPanelProps) {
             <ScrollArea className="flex-1">
                  <div className="p-4 space-y-6">
                     <ChordProgressionGenerator />
-                    {/* Future songwriting tools will go here */}
+                    <Separator />
+                    <SongStructureAssistant initialContent={editorContent} onStructureChange={onContentChange} />
                  </div>
             </ScrollArea>
         </aside>

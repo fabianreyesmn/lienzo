@@ -201,7 +201,11 @@ export default function WriterPage() {
                     selectedText={selectedText}
                 />;
             case "Cancionero":
-                 return <SongwritingToolsPanel {...panelProps} />;
+                 return <SongwritingToolsPanel 
+                    {...panelProps} 
+                    editorContent={content}
+                    onContentChange={setContent}
+                 />;
             default:
                 return null;
         }
