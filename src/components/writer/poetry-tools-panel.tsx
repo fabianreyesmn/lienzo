@@ -8,6 +8,7 @@ import { MetricsAnalyzer } from "./metrics-analyzer";
 import { VerseSnapshots } from "./verse-snapshots";
 import { EvocativeWordsGenerator } from "./evocative-words-generator";
 import { RhymeDictionary } from "./rhyme-dictionary";
+import { SheetHeader, SheetTitle } from "../ui/sheet";
 
 
 interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
@@ -15,9 +16,10 @@ interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     currentLineText: string;
     selectedText: string;
     isSheet?: boolean;
+    title?: string;
 }
 
-export function PoetryToolsPanel({ editorContent, currentLineText, selectedText, isSheet, ...props }: PoetryToolsPanelProps) {
+export function PoetryToolsPanel({ editorContent, currentLineText, selectedText, isSheet, title, ...props }: PoetryToolsPanelProps) {
     const textToAnalyze = selectedText.trim() ? selectedText : editorContent;
 
     const mainContent = (
@@ -56,12 +58,12 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
     if (isSheet) {
         return (
             <div {...props} className="h-full flex flex-col">
-                <div className="p-4 border-b">
-                    <h2 className="text-lg font-headline flex items-center gap-2">
-                        <Wand2 className="h-5 w-5 text-primary" />
-                        Herramientas de Poesía
-                    </h2>
-                </div>
+                <SheetHeader className="p-4 border-b">
+                    <SheetTitle className="flex items-center gap-2">
+                         <Wand2 className="h-5 w-5 text-primary" />
+                         <span>{title}</span>
+                    </SheetTitle>
+                </SheetHeader>
                 <ScrollArea className="flex-1">
                     {mainContent}
                 </ScrollArea>

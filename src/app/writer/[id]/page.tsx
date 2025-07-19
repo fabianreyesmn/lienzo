@@ -20,6 +20,9 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 
@@ -196,10 +199,11 @@ export default function WriterPage() {
     const renderToolsPanel = (isSheet = false) => {
         const panelProps = {
              style: !isSheet ? { width: `${panelWidth}px`, minWidth: '320px', maxWidth: '800px' } : {},
-             isSheet
+             isSheet,
+             title: `Herramientas para ${project?.type}`
         };
 
-        switch (project.type) {
+        switch (project?.type) {
             case "Poesía":
                 return <PoetryToolsPanel 
                     {...panelProps}
@@ -218,6 +222,7 @@ export default function WriterPage() {
                 return <NoteToolsPanel
                     {...panelProps}
                     editorContent={content}
+                    onContentChange={setContent}
                 />;
             default:
                 return null;
@@ -256,7 +261,7 @@ export default function WriterPage() {
                                         <span className="sr-only">Abrir herramientas</span>
                                     </Button>
                                 </SheetTrigger>
-                                <SheetContent side="bottom" className="h-[80vh] flex flex-col">
+                                <SheetContent side="bottom" className="h-[80vh] flex flex-col p-0">
                                     {renderToolsPanel(true)}
                                 </SheetContent>
                             </Sheet>

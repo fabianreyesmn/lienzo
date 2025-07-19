@@ -8,15 +8,17 @@ import { Separator } from "../ui/separator";
 import { SongStructureAssistant } from "./song-structure-assistant";
 import { MetricsAnalyzer } from "./metrics-analyzer";
 import { RhymeDictionary } from "./rhyme-dictionary";
+import { SheetHeader, SheetTitle } from "../ui/sheet";
 
 interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
     selectedText: string;
     onContentChange: (newContent: string) => void;
     isSheet?: boolean;
+    title?: string;
 }
 
-export function SongwritingToolsPanel({ editorContent, selectedText, onContentChange, isSheet, ...props } : SongwritingToolsPanelProps) {
+export function SongwritingToolsPanel({ editorContent, selectedText, onContentChange, isSheet, title, ...props } : SongwritingToolsPanelProps) {
 
     const textToAnalyze = selectedText.trim() ? selectedText : editorContent;
     
@@ -44,12 +46,12 @@ export function SongwritingToolsPanel({ editorContent, selectedText, onContentCh
     if (isSheet) {
         return (
             <div {...props} className="h-full flex flex-col">
-                <div className="p-4 border-b">
-                    <h2 className="text-lg font-headline flex items-center gap-2">
+                <SheetHeader className="p-4 border-b">
+                    <SheetTitle className="flex items-center gap-2">
                         <Music className="h-5 w-5 text-primary" />
-                        Herramientas de Compositor
-                    </h2>
-                </div>
+                        <span>{title}</span>
+                    </SheetTitle>
+                </SheetHeader>
                 <ScrollArea className="flex-1">
                     {mainContent}
                 </ScrollArea>
