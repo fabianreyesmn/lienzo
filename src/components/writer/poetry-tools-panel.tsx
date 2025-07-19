@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, Loader2, BookCheck, History, BrainCircuit } from "lucide-react";
+import { Wand2, Loader2, BookCheck, History, BrainCircuit, BookText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -95,6 +95,7 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
 
                     <div>
                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <BookText className="h-4 w-4" />
                             Diccionario de Rimas y Sinónimos
                         </h3>
                         <form onSubmit={handleSearch}>
