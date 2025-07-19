@@ -111,11 +111,11 @@ export function NewProjectDialog({ children, onProjectCreate }: NewProjectDialog
                 <button
                   key={pt.type}
                   onClick={() => handleSelectType(pt.type)}
-                  className="p-4 border rounded-lg text-center flex flex-col items-center justify-center gap-2 hover:bg-accent hover:border-accent-foreground/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="group p-4 border rounded-lg text-center flex flex-col items-center justify-center gap-2 hover:bg-accent hover:border-accent-foreground/50 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
                 >
-                  <div className="text-primary">{pt.icon}</div>
-                  <h3 className="font-semibold">{pt.type}</h3>
-                  <p className="text-xs text-muted-foreground">{pt.description}</p>
+                  <div className="text-primary group-hover:text-accent-foreground">{pt.icon}</div>
+                  <h3 className="font-semibold group-hover:text-accent-foreground">{pt.type}</h3>
+                  <p className="text-xs text-muted-foreground group-hover:text-accent-foreground/80">{pt.description}</p>
                 </button>
               ))}
             </div>
