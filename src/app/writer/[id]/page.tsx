@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ArrowLeft, Save, Maximize, Minimize } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,8 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { SyllableCounter } from "@/components/writer/syllable-counter";
 import { PoetryToolsPanel } from "@/components/writer/poetry-tools-panel";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
-import { cn } from "@/lib/utils";
-
 
 interface ProjectData {
     title: string;
@@ -36,7 +34,6 @@ export default function WriterPage() {
     const [currentLineText, setCurrentLineText] = useState("");
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [isZenMode, setIsZenMode] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 
@@ -113,18 +110,6 @@ export default function WriterPage() {
         }
     }, [authLoading, fetchProject]);
 
-     useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape" && isZenMode) {
-                setIsZenMode(false);
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [isZenMode]);
-    
     const handleSave = async () => {
         if (!projectId || isSaving) return;
         setIsSaving(true);
@@ -170,9 +155,9 @@ export default function WriterPage() {
     }
 
     return (
-        <div className={cn("flex h-screen", isZenMode && "bg-background")}>
+        <div className="flex h-screen">
              <SonnerToaster />
-            <div className={cn("flex flex-col flex-1 transition-all duration-300", isZenMode && "w-0 invisible")}>
+            <div className="flex flex-col flex-1">
                 <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
                     <Button variant="outline" size="icon" asChild>
                         <Link href="/dashboard">
@@ -186,9 +171,6 @@ export default function WriterPage() {
                     </div>
                     <div className="flex items-center gap-4">
                         {project.type === "Poesía" && <SyllableCounter lineText={currentLineText} />}
-                        <Button variant="ghost" size="icon" onClick={() => setIsZenMode(true)} title="Modo Zen">
-                            <Maximize className="h-4 w-4" />
-                        </Button>
                         <Button onClick={handleSave} disabled={isSaving}>
                             <Save className="mr-2 h-4 w-4" />
                             {isSaving ? "Guardando..." : "Guardar"}
@@ -210,24 +192,8 @@ export default function WriterPage() {
                     />
                 </main>
             </div>
-            <div className={cn(
-                    "flex-1 flex items-center justify-center transition-all duration-300 relative",
-                    !isZenMode && "w-0 invisible opacity-0"
-                )}>
-                <Button variant="outline" size="icon" onClick={() => setIsZenMode(false)} className="absolute top-4 right-4 z-20" title="Salir del Modo Zen (Esc)">
-                    <Minimize className="h-4 w-4" />
-                </Button>
-                <Textarea
-                    placeholder="Empieza a escribir tu historia aquí..."
-                    className="w-full max-w-3xl h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-8 md:p-16 text-lg lg:text-xl !bg-transparent leading-loose"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                />
-            </div>
             {project.type === "Poesía" && (
-                 <div className={cn("transition-all duration-300", isZenMode && "w-0 invisible")}>
-                    <PoetryToolsPanel />
-                </div>
+                <PoetryToolsPanel />
             )}
         </div>
     );
