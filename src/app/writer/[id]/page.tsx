@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SyllableCounter } from "@/components/writer/syllable-counter";
 import { PoetryToolsPanel } from "@/components/writer/poetry-tools-panel";
 import { SongwritingToolsPanel } from "@/components/writer/songwriting-tools-panel";
+import { NoteToolsPanel } from "@/components/writer/note-tools-panel";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 
 interface ProjectData {
@@ -207,6 +208,11 @@ export default function WriterPage() {
                     selectedText={selectedText}
                     onContentChange={setContent}
                  />;
+            case "Notas":
+                return <NoteToolsPanel
+                    {...panelProps}
+                    editorContent={content}
+                />;
             default:
                 return null;
         }
