@@ -5,20 +5,14 @@ export interface AnalyzedLine {
 }
 
 const vowels = "aeiouáéíóú";
-const strongVowels = "aeoáéó";
-const weakVowels = "iuíú";
 
 // Normaliza la palabra para el análisis de rima (quita tildes, convierte a minúsculas)
 const normalizeWord = (word: string): string => {
-    return word
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+    return word.toLowerCase();
 };
 
 // Obtiene la última palabra de un verso
 const getLastWord = (line: string): string => {
-    // Expresión regular mejorada para capturar palabras, incluyendo ñ y acentos
     const words = line.trim().match(/\b[\w\u00C0-\u017F_]+\b/g);
     return words ? words[words.length - 1] : "";
 };
@@ -26,37 +20,37 @@ const getLastWord = (line: string): string => {
 
 // Encuentra el índice de la sílaba tónica (la que lleva el acento)
 const findStressedVowelIndex = (word: string): number => {
-    const normalized = normalizeWord(word);
+    const normalized = word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const original = word.toLowerCase();
+    
     if (!normalized) return -1;
 
-    const accentIndex = word.search(/[áéíóú]/);
+    // 1. Check for explicit accent
+    const accentIndex = original.search(/[áéíóú]/);
     if (accentIndex !== -1) {
         return accentIndex;
     }
 
+    // 2. Word ends in vowel, 'n', or 's' -> stressed on the second to last syllable (grave/llana)
     const lastChar = normalized.slice(-1);
-    const secondLastChar = normalized.slice(-2, -1);
-    
-    // Reglas de acentuación para palabras sin tilde explícita
-    // Agudas: terminan en n, s, o vocal. Acento en la última sílaba.
-    if ("ns".includes(lastChar) || vowels.includes(lastChar)) {
-         // buscar la última vocal
-        for (let i = normalized.length - 1; i >= 0; i--) {
-            if (vowels.includes(normalized[i])) return i;
-        }
-    } 
-    // Graves: no terminan en n, s, o vocal. Acento en la penúltima sílaba.
-    else {
+    if (vowels.includes(lastChar.normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || lastChar === 'n' || lastChar === 's') {
         let vowelCount = 0;
-        for (let i = normalized.length - 1; i >= 0; i--) {
-            if (vowels.includes(normalized[i])) {
+        for (let i = original.length - 1; i >= 0; i--) {
+            if (vowels.includes(original[i])) {
                 vowelCount++;
                 if (vowelCount === 2) return i;
             }
         }
-        // Si solo tiene una sílaba, esa es la tónica
-        for (let i = normalized.length - 1; i >= 0; i--) {
-            if (vowels.includes(normalized[i])) return i;
+        // If only one syllable, it's stressed
+        for (let i = original.length - 1; i >= 0; i--) {
+             if (vowels.includes(original[i])) return i;
+        }
+
+    } 
+    // 3. Word ends in a consonant (not 'n' or 's') -> stressed on the last syllable (aguda)
+    else {
+        for (let i = original.length - 1; i >= 0; i--) {
+            if (vowels.includes(original[i])) return i;
         }
     }
     
@@ -64,28 +58,31 @@ const findStressedVowelIndex = (word: string): number => {
 }
 
 
-// Obtiene la terminación relevante para la rima (desde la última vocal acentuada)
+// Obtiene la terminación relevante para la rima (solo las vocales desde la última vocal acentuada)
 const getRhymeEnding = (word: string): string => {
     if (!word) return "";
-    const stressedVowelIndex = findStressedVowelIndex(word);
+    const originalWord = word.toLowerCase();
+    const stressedVowelIndex = findStressedVowelIndex(originalWord);
     
     if (stressedVowelIndex !== -1) {
-        return normalizeWord(word.substring(stressedVowelIndex));
+        const ending = originalWord.substring(stressedVowelIndex);
+        const normalizedEnding = ending.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return normalizedEnding.replace(/[^aeiou]/g, ""); // Keep only vowels
     }
 
-    return normalizeWord(word); // Fallback
+    return ""; // Fallback
 };
 
 
-// Compara si dos palabras riman (consonante)
+// Compara si dos palabras riman (asonante)
 const doWordsRhyme = (word1: string, word2: string): boolean => {
-    if (!word1 || !word2 || word1 === word2) return false;
+    if (!word1 || !word2 || normalizeWord(word1) === normalizeWord(word2)) return false;
     
     const ending1 = getRhymeEnding(word1);
     const ending2 = getRhymeEnding(word2);
 
-    // Para rima consonante, la terminación debe ser idéntica y de al menos 2 caracteres.
-    if (ending1 && ending2 && ending1.length >= 2 && ending1 === ending2) {
+    // For assonant rhyme, the vowel sequence must be identical and non-empty.
+    if (ending1 && ending1 === ending2) {
         return true;
     }
 
