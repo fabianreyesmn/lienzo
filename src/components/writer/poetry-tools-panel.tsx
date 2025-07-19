@@ -17,9 +17,10 @@ import { VerseSnapshots } from "./verse-snapshots";
 interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
     currentLineText: string;
+    selectedText: string;
 }
 
-export function PoetryToolsPanel({ editorContent, currentLineText, ...props }: PoetryToolsPanelProps) {
+export function PoetryToolsPanel({ editorContent, currentLineText, selectedText, ...props }: PoetryToolsPanelProps) {
     const [word, setWord] = useState("");
     const [rhymes, setRhymes] = useState<string[]>([]);
     const [synonyms, setSynonyms] = useState<string[]>([]);
@@ -52,6 +53,8 @@ export function PoetryToolsPanel({ editorContent, currentLineText, ...props }: P
         }
     };
 
+    const textToAnalyze = selectedText.trim() ? selectedText : editorContent;
+
     return (
         <aside {...props} className="border-l bg-card h-full flex flex-col shrink-0">
             <div className="p-4 border-b">
@@ -68,7 +71,7 @@ export function PoetryToolsPanel({ editorContent, currentLineText, ...props }: P
                             <BookCheck className="h-4 w-4" />
                             Análisis de Métrica
                         </h3>
-                        <MetricsAnalyzer content={editorContent} />
+                        <MetricsAnalyzer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
                     </div>
 
                     <Separator />

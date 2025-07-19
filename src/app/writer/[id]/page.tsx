@@ -31,6 +31,7 @@ export default function WriterPage() {
 
     const [project, setProject] = useState<ProjectData | null>(null);
     const [content, setContent] = useState("");
+    const [selectedText, setSelectedText] = useState("");
     const [currentLineText, setCurrentLineText] = useState("");
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -84,6 +85,13 @@ export default function WriterPage() {
             }
         }
     };
+    
+    const handleSelectionChange = () => {
+        if (textareaRef.current) {
+            const { selectionStart, selectionEnd, value } = textareaRef.current;
+            setSelectedText(value.substring(selectionStart, selectionEnd));
+        }
+    }
 
 
     const fetchProject = useCallback(async () => {
@@ -211,8 +219,15 @@ export default function WriterPage() {
                             setContent(e.target.value);
                             updateCurrentLine();
                         }}
-                        onKeyUp={updateCurrentLine}
-                        onClick={updateCurrentLine}
+                        onKeyUp={(e) => {
+                            updateCurrentLine();
+                            handleSelectionChange();
+                        }}
+                        onClick={(e) => {
+                            updateCurrentLine();
+                            handleSelectionChange();
+                        }}
+                        onMouseUp={handleSelectionChange}
                     />
                 </main>
             </div>
@@ -225,6 +240,7 @@ export default function WriterPage() {
                     <PoetryToolsPanel 
                         editorContent={content} 
                         currentLineText={currentLineText}
+                        selectedText={selectedText}
                         style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '800px' }}
                     />
                 </>
