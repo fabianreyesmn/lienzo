@@ -6,17 +6,19 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Feather } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { SyllableCounter } from "@/components/writer/syllable-counter";
 
 interface ProjectData {
     title: string;
     content: string;
     userId: string;
+    type: string; // <-- Add type here
 }
 
 export default function WriterPage() {
@@ -31,7 +33,7 @@ export default function WriterPage() {
     const [isSaving, setIsSaving] = useState(false);
 
     const getWordCount = (text: string) => {
-        if (!text) return 0;
+        if (!text.trim()) return 0;
         return text.trim().split(/\s+/).length;
     };
 
@@ -134,14 +136,17 @@ export default function WriterPage() {
                         <span className="sr-only">Volver al Escritorio</span>
                     </Link>
                 </Button>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     <h1 className="font-headline text-lg font-semibold truncate">{project.title}</h1>
                     <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
                 </div>
-                <Button onClick={handleSave} disabled={isSaving}>
-                    <Save className="mr-2 h-4 w-4" />
-                    {isSaving ? "Guardando..." : "Guardar"}
-                </Button>
+                <div className="flex items-center gap-4">
+                    {project.type === "Poesía" && <SyllableCounter text={content} />}
+                    <Button onClick={handleSave} disabled={isSaving}>
+                        <Save className="mr-2 h-4 w-4" />
+                        {isSaving ? "Guardando..." : "Guardar"}
+                    </Button>
+                </div>
             </header>
             <main className="flex-1 overflow-auto">
                 <Textarea
