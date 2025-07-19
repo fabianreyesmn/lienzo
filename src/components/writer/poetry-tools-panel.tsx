@@ -2,16 +2,22 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, Loader2 } from "lucide-react";
+import { Wand2, Loader2, BookCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPoetrySuggestions } from "@/ai/flows/poetry-tools-flow";
 import { toast } from "sonner";
+import { Separator } from "../ui/separator";
+import { MetricsAnalyzer } from "./metrics-analyzer";
 
 
-export function PoetryToolsPanel() {
+interface PoetryToolsPanelProps {
+    editorContent: string;
+}
+
+export function PoetryToolsPanel({ editorContent }: PoetryToolsPanelProps) {
     const [word, setWord] = useState("");
     const [rhymes, setRhymes] = useState<string[]>([]);
     const [synonyms, setSynonyms] = useState<string[]>([]);
@@ -52,51 +58,62 @@ export function PoetryToolsPanel() {
                     Herramientas de Poesía
                 </h2>
             </div>
-            <div className="p-4">
-                <form onSubmit={handleSearch} className="flex gap-2">
-                    <Input 
-                        placeholder="Escribe una palabra..."
-                        value={word}
-                        onChange={(e) => setWord(e.target.value)}
-                        disabled={isLoading}
-                    />
-                    <Button type="submit" disabled={isLoading}>
-                        {isLoading ? <Loader2 className="animate-spin" /> : "Buscar"}
-                    </Button>
-                </form>
-            </div>
+            
             <ScrollArea className="flex-1">
-                <div className="p-4 pt-0 space-y-4">
-                   <Card>
-                        <CardHeader className="p-4">
-                            <CardTitle className="text-base font-semibold">Rimas</CardTitle>
-                            <CardDescription className="text-xs">Palabras que riman con &quot;{word || '...'}&quot;</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            {rhymes.length > 0 ? (
-                                <ul className="text-sm space-y-1">
-                                    {rhymes.map((r, i) => <li key={i}>{r}</li>)}
-                                </ul>
-                            ) : (
-                                <p className="text-xs text-muted-foreground">No se encontraron rimas.</p>
-                            )}
-                        </CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader className="p-4">
-                            <CardTitle className="text-base font-semibold">Sinónimos</CardTitle>
-                            <CardDescription className="text-xs">Palabras con significado similar.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            {synonyms.length > 0 ? (
-                                <ul className="text-sm space-y-1">
-                                    {synonyms.map((s, i) => <li key={i}>{s}</li>)}
-                                </ul>
-                            ) : (
-                                <p className="text-xs text-muted-foreground">No se encontraron sinónimos.</p>
-                            )}
-                        </CardContent>
-                    </Card>
+                 <div className="p-4">
+                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                        <BookCheck className="h-4 w-4" />
+                        Análisis de Métrica
+                    </h3>
+                    <MetricsAnalyzer content={editorContent} />
+                </div>
+
+                <Separator className="my-2" />
+
+                <div className="p-4 pt-0">
+                    <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+                        <Input 
+                            placeholder="Escribe una palabra..."
+                            value={word}
+                            onChange={(e) => setWord(e.target.value)}
+                            disabled={isLoading}
+                        />
+                        <Button type="submit" disabled={isLoading} size="icon">
+                            {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                        </Button>
+                    </form>
+                    <div className="space-y-4">
+                        <Card>
+                            <CardHeader className="p-4">
+                                <CardTitle className="text-base font-semibold">Rimas</CardTitle>
+                                <CardDescription className="text-xs">Palabras que riman con &quot;{word || '...'}&quot;</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0">
+                                {rhymes.length > 0 ? (
+                                    <ul className="text-sm space-y-1">
+                                        {rhymes.map((r, i) => <li key={i}>{r}</li>)}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-muted-foreground">No se encontraron rimas.</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="p-4">
+                                <CardTitle className="text-base font-semibold">Sinónimos</CardTitle>
+                                <CardDescription className="text-xs">Palabras con significado similar.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-4 pt-0">
+                                {synonyms.length > 0 ? (
+                                    <ul className="text-sm space-y-1">
+                                        {synonyms.map((s, i) => <li key={i}>{s}</li>)}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-muted-foreground">No se encontraron sinónimos.</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </ScrollArea>
         </aside>

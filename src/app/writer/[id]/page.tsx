@@ -193,7 +193,7 @@ export default function WriterPage() {
                 </main>
             </div>
             {project.type === "Poesía" && (
-                <PoetryToolsPanel />
+                <PoetryToolsPanel editorContent={content} />
             )}
         </div>
     );
