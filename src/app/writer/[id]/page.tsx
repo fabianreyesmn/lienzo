@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { SyllableCounter } from "@/components/writer/syllable-counter";
 import { PoetryToolsPanel } from "@/components/writer/poetry-tools-panel";
+import { SongwritingToolsPanel } from "@/components/writer/songwriting-tools-panel";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
 
 interface ProjectData {
@@ -186,6 +187,28 @@ export default function WriterPage() {
         return null; // or a more specific "not found" component
     }
 
+    const renderToolsPanel = () => {
+        const panelProps = {
+             style:{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '800px' }
+        };
+
+        switch (project.type) {
+            case "Poesía":
+                return <PoetryToolsPanel 
+                    {...panelProps}
+                    editorContent={content} 
+                    currentLineText={currentLineText}
+                    selectedText={selectedText}
+                />;
+            case "Cancionero":
+                 return <SongwritingToolsPanel {...panelProps} />;
+            default:
+                return null;
+        }
+    }
+    
+    const toolsPanel = renderToolsPanel();
+
     return (
         <div className="flex h-screen overflow-hidden">
              <SonnerToaster />
@@ -231,18 +254,13 @@ export default function WriterPage() {
                     />
                 </main>
             </div>
-            {project.type === "Poesía" && (
+            {toolsPanel && (
                 <>
                     <div 
                         onMouseDown={handleMouseDown}
                         className="w-2 cursor-col-resize bg-border/50 hover:bg-primary/20 transition-colors"
                     />
-                    <PoetryToolsPanel 
-                        editorContent={content} 
-                        currentLineText={currentLineText}
-                        selectedText={selectedText}
-                        style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '800px' }}
-                    />
+                    {toolsPanel}
                 </>
             )}
         </div>
