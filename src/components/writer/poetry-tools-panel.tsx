@@ -13,11 +13,11 @@ import { Separator } from "../ui/separator";
 import { MetricsAnalyzer } from "./metrics-analyzer";
 
 
-interface PoetryToolsPanelProps {
+interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
 }
 
-export function PoetryToolsPanel({ editorContent }: PoetryToolsPanelProps) {
+export function PoetryToolsPanel({ editorContent, ...props }: PoetryToolsPanelProps) {
     const [word, setWord] = useState("");
     const [rhymes, setRhymes] = useState<string[]>([]);
     const [synonyms, setSynonyms] = useState<string[]>([]);
@@ -51,7 +51,7 @@ export function PoetryToolsPanel({ editorContent }: PoetryToolsPanelProps) {
     };
 
     return (
-        <aside className="w-80 border-l bg-card h-full flex flex-col">
+        <aside {...props} className="border-l bg-card h-full flex flex-col shrink-0">
             <div className="p-4 border-b">
                 <h2 className="text-lg font-headline flex items-center gap-2">
                     <Wand2 className="h-5 w-5 text-primary" />

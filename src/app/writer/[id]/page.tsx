@@ -36,6 +36,30 @@ export default function WriterPage() {
     const [isSaving, setIsSaving] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    const [panelWidth, setPanelWidth] = useState(320); // Default width in px (w-80)
+    const isResizing = useRef(false);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        e.preventDefault();
+        isResizing.current = true;
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+        if (!isResizing.current) return;
+        const newWidth = window.innerWidth - e.clientX;
+        if (newWidth > 250 && newWidth < 600) { // Min and max width
+            setPanelWidth(newWidth);
+        }
+    };
+
+    const handleMouseUp = () => {
+        isResizing.current = false;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    };
+
 
     const getWordCount = (text: string) => {
         if (!text.trim()) return 0;
@@ -155,7 +179,7 @@ export default function WriterPage() {
     }
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen overflow-hidden">
              <SonnerToaster />
             <div className="flex flex-col flex-1">
                 <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
@@ -193,7 +217,16 @@ export default function WriterPage() {
                 </main>
             </div>
             {project.type === "Poesía" && (
-                <PoetryToolsPanel editorContent={content} />
+                <>
+                    <div 
+                        onMouseDown={handleMouseDown}
+                        className="w-2 cursor-col-resize bg-border/50 hover:bg-primary/20 transition-colors"
+                    />
+                    <PoetryToolsPanel 
+                        editorContent={content} 
+                        style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '600px' }}
+                    />
+                </>
             )}
         </div>
     );
