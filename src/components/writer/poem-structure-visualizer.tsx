@@ -33,8 +33,7 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
 
     }, [content]);
 
-    const chartHeight = Math.max(150, chartData.length * 30);
-    const containerHeight = Math.min(chartHeight, 400); // Max height of 400px
+    const chartInternalHeight = Math.max(150, chartData.length * 35);
 
     return (
         <Card className="bg-background/50 overflow-hidden">
@@ -44,15 +43,19 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
                     {hasSelection ? "Visualización de la estrofa seleccionada." : "Visualización de todo el poema."}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="p-4 pt-0">
+            <CardContent className="pl-2 pr-4 pt-0">
                 {chartData.length > 0 ? (
-                     <ScrollArea style={{ height: `${containerHeight}px` }}>
-                        <ChartContainer config={chartConfig} className="h-[--chart-height] min-w-[200px]" style={{ '--chart-height': `${chartHeight}px` } as React.CSSProperties}>
+                     <ScrollArea className="h-[200px]">
+                        <ChartContainer 
+                            config={chartConfig} 
+                            className="w-full" 
+                            style={{ height: `${chartInternalHeight}px` }}
+                        >
                             <BarChart
                                 accessibilityLayer
                                 data={chartData}
                                 layout="vertical"
-                                margin={{ left: 10, right: 30 }}
+                                margin={{ left: 10, top: 5, right: 10, bottom: 5 }}
                             >
                                 <XAxis type="number" hide />
                                 <YAxis
@@ -61,26 +64,27 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
                                     tickLine={false}
                                     tickMargin={5}
                                     axisLine={false}
+                                    interval={0}
                                     className="text-xs fill-muted-foreground"
+                                    width={40}
                                 />
                                 <ChartTooltip
                                     cursor={false}
                                     content={<ChartTooltipContent 
+                                        indicator="line"
                                         labelKey="fullLineText" 
                                         className="w-56"
-                                        formatter={(value, name) => (
-                                          <div className="flex flex-col">
-                                            <span>{value} sílabas</span>
-                                          </div>
+                                        formatter={(value) => (
+                                          <div className="font-medium">{`${value} sílabas`}</div>
                                         )}
                                     />}
                                 />
-                                <Bar dataKey="syllables" fill="var(--color-syllables)" radius={4}>
+                                <Bar dataKey="syllables" fill="var(--color-syllables)" radius={4} barSize={20}>
                                     <LabelList
                                         dataKey="syllables"
-                                        position="right"
+                                        position="insideRight"
                                         offset={8}
-                                        className="fill-foreground font-bold text-xs"
+                                        className="fill-primary-foreground font-bold text-xs"
                                     />
                                 </Bar>
                             </BarChart>
@@ -88,7 +92,7 @@ export function PoemStructureVisualizer({ content, hasSelection }: PoemStructure
                      </ScrollArea>
                 ) : (
                     <div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
-                        No hay texto para visualizar.
+                        Escribe algo para visualizar su estructura.
                     </div>
                 )}
             </CardContent>
