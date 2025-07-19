@@ -23,7 +23,7 @@ export function InteractiveChecklist({ content, onContentChange }: InteractiveCh
     return content
       .split('\n')
       .map((line, index) => {
-        const match = line.match(/^\[( |x)\]\s*(.*)/i);
+        const match = line.match(/^- \[( |x)\]\s*(.*)/i);
         if (match) {
           return {
             text: match[2],
@@ -41,39 +41,37 @@ export function InteractiveChecklist({ content, onContentChange }: InteractiveCh
     const originalLineIndex = tasks[taskIndex].originalIndex;
     const currentLine = lines[originalLineIndex];
 
-    const newMarker = newCheckedState ? '[x]' : '[ ]';
-    lines[originalLineIndex] = currentLine.replace(/^\[( |x)\]/i, newMarker);
+    const newMarker = newCheckedState ? '- [x]' : '- [ ]';
+    lines[originalLineIndex] = currentLine.replace(/^- \[( |x)\]/i, newMarker);
 
     onContentChange(lines.join('\n'));
   };
+
+  if (tasks.length === 0) {
+    return null;
+  }
 
   return (
     <Card className="bg-background/50">
       <CardContent className="p-2">
         <ScrollArea className="h-48 w-full rounded-md border">
-          {tasks.length > 0 ? (
-            <div className="p-4 space-y-3">
-              {tasks.map((task, index) => (
-                <div key={`${task.originalIndex}-${task.text}`} className="flex items-center space-x-3">
-                  <Checkbox
-                    id={`task-${task.originalIndex}`}
-                    checked={task.checked}
-                    onCheckedChange={(checked) => handleToggleTask(index, !!checked)}
-                  />
-                  <label
-                    htmlFor={`task-${task.originalIndex}`}
-                    className={`text-sm leading-none ${task.checked ? 'line-through text-muted-foreground' : ''} peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
-                  >
-                    {task.text}
-                  </label>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center text-xs text-muted-foreground p-4 text-center">
-              Escribe `[ ]` seguido de una tarea en el editor para que aparezca aquí.
-            </div>
-          )}
+          <div className="p-4 space-y-3">
+            {tasks.map((task, index) => (
+              <div key={`${task.originalIndex}-${task.text}`} className="flex items-center space-x-3">
+                <Checkbox
+                  id={`task-${task.originalIndex}`}
+                  checked={task.checked}
+                  onCheckedChange={(checked) => handleToggleTask(index, !!checked)}
+                />
+                <label
+                  htmlFor={`task-${task.originalIndex}`}
+                  className={`text-sm leading-none ${task.checked ? 'line-through text-muted-foreground' : ''} peer-disabled:cursor-not-allowed peer-disabled:opacity-70`}
+                >
+                  {task.text}
+                </label>
+              </div>
+            ))}
+          </div>
         </ScrollArea>
       </CardContent>
     </Card>

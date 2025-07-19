@@ -212,7 +212,6 @@ export default function WriterPage() {
                 return <NoteToolsPanel
                     {...panelProps}
                     editorContent={content}
-                    onContentChange={setContent}
                 />;
             default:
                 return null;
@@ -249,7 +248,7 @@ export default function WriterPage() {
                      <Textarea
                         ref={textareaRef}
                         placeholder="Empieza a escribir tu historia aquí..."
-                        className="w-full h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-4 md:p-8 text-base lg:text-lg !bg-background"
+                        className="w-full h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-4 md:p-8 text-base lg:text-lg !bg-background font-code"
                         value={content}
                         onChange={(e) => {
                             setContent(e.target.value);
