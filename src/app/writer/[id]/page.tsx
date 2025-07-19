@@ -6,13 +6,16 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ArrowLeft, Save, Feather } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { SyllableCounter } from "@/components/writer/syllable-counter";
+import { PoetryToolsPanel } from "@/components/writer/poetry-tools-panel";
+import { Toaster as SonnerToaster } from "@/components/ui/sonner"
+
 
 interface ProjectData {
     title: string;
@@ -51,6 +54,10 @@ export default function WriterPage() {
                     setCurrentLineText(line);
                     return;
                 }
+            }
+             // If cursor is at the very end
+            if (selectionStart >= value.length) {
+                setCurrentLineText(lines[lines.length - 1]);
             }
         }
     };
@@ -149,40 +156,44 @@ export default function WriterPage() {
     }
 
     return (
-        <div className="flex flex-col h-screen">
-            <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
-                <Button variant="outline" size="icon" asChild>
-                    <Link href="/dashboard">
-                        <ArrowLeft className="h-4 w-4" />
-                        <span className="sr-only">Volver al Escritorio</span>
-                    </Link>
-                </Button>
-                <div className="flex-1 min-w-0">
-                    <h1 className="font-headline text-lg font-semibold truncate">{project.title}</h1>
-                    <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
-                </div>
-                <div className="flex items-center gap-4">
-                    {project.type === "Poesía" && <SyllableCounter lineText={currentLineText} />}
-                    <Button onClick={handleSave} disabled={isSaving}>
-                        <Save className="mr-2 h-4 w-4" />
-                        {isSaving ? "Guardando..." : "Guardar"}
+        <div className="flex h-screen">
+             <SonnerToaster />
+            <div className="flex flex-col flex-1">
+                <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
+                    <Button variant="outline" size="icon" asChild>
+                        <Link href="/dashboard">
+                            <ArrowLeft className="h-4 w-4" />
+                            <span className="sr-only">Volver al Escritorio</span>
+                        </Link>
                     </Button>
-                </div>
-            </header>
-            <main className="flex-1 overflow-auto">
-                <Textarea
-                    ref={textareaRef}
-                    placeholder="Empieza a escribir tu historia aquí..."
-                    className="w-full h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-4 md:p-8 text-base lg:text-lg !bg-background"
-                    value={content}
-                    onChange={(e) => {
-                        setContent(e.target.value);
-                        updateCurrentLine();
-                    }}
-                    onKeyUp={updateCurrentLine}
-                    onClick={updateCurrentLine}
-                />
-            </main>
+                    <div className="flex-1 min-w-0">
+                        <h1 className="font-headline text-lg font-semibold truncate">{project.title}</h1>
+                        <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        {project.type === "Poesía" && <SyllableCounter lineText={currentLineText} />}
+                        <Button onClick={handleSave} disabled={isSaving}>
+                            <Save className="mr-2 h-4 w-4" />
+                            {isSaving ? "Guardando..." : "Guardar"}
+                        </Button>
+                    </div>
+                </header>
+                <main className="flex-1 overflow-auto">
+                    <Textarea
+                        ref={textareaRef}
+                        placeholder="Empieza a escribir tu historia aquí..."
+                        className="w-full h-full resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none p-4 md:p-8 text-base lg:text-lg !bg-background"
+                        value={content}
+                        onChange={(e) => {
+                            setContent(e.target.value);
+                            updateCurrentLine();
+                        }}
+                        onKeyUp={updateCurrentLine}
+                        onClick={updateCurrentLine}
+                    />
+                </main>
+            </div>
+            {project.type === "Poesía" && <PoetryToolsPanel />}
         </div>
     );
 }
