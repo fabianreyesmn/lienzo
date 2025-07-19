@@ -4,6 +4,10 @@ export interface AnalyzedLine {
     rhyme: string;
 }
 
+const vowels = "aeiouáéíóú";
+const strongVowels = "aeoáéó";
+const weakVowels = "iuíú";
+
 // Normaliza la palabra para el análisis de rima (quita tildes, convierte a minúsculas)
 const normalizeWord = (word: string): string => {
     return word
@@ -14,97 +18,115 @@ const normalizeWord = (word: string): string => {
 
 // Obtiene la última palabra de un verso
 const getLastWord = (line: string): string => {
-    const words = line.trim().match(/\b(\w+)\b/g);
+    // Expresión regular mejorada para capturar palabras, incluyendo ñ y acentos
+    const words = line.trim().match(/\b[\w\u00C0-\u017F_]+\b/g);
     return words ? words[words.length - 1] : "";
 };
 
-// Obtiene la terminación relevante para la rima (desde la última vocal acentuada)
-const getRhymeEnding = (word: string): string => {
+
+// Encuentra el índice de la sílaba tónica (la que lleva el acento)
+const findStressedVowelIndex = (word: string): number => {
     const normalized = normalizeWord(word);
-    if (normalized.length === 0) return "";
+    if (!normalized) return -1;
 
-    const vowels = "aeiou";
-    let lastVowelIndex = -1;
-    let stressedVowelIndex = -1;
+    const accentIndex = word.search(/[áéíóú]/);
+    if (accentIndex !== -1) {
+        return accentIndex;
+    }
 
-    // Encuentra la última vocal tónica (o la antepenúltima sílaba para esdrújulas, simplificado aquí)
-    for (let i = normalized.length - 1; i >= 0; i--) {
-        if (vowels.includes(normalized[i])) {
-            if (lastVowelIndex === -1) lastVowelIndex = i;
-
-            // Simplificación: consideramos tónica la última o penúltima vocal
-            // Una lógica real necesitaría reglas de acentuación completas.
-            if (stressedVowelIndex === -1) {
-                 stressedVowelIndex = i;
+    const lastChar = normalized.slice(-1);
+    const secondLastChar = normalized.slice(-2, -1);
+    
+    // Reglas de acentuación para palabras sin tilde explícita
+    // Agudas: terminan en n, s, o vocal. Acento en la última sílaba.
+    if ("ns".includes(lastChar) || vowels.includes(lastChar)) {
+         // buscar la última vocal
+        for (let i = normalized.length - 1; i >= 0; i--) {
+            if (vowels.includes(normalized[i])) return i;
+        }
+    } 
+    // Graves: no terminan en n, s, o vocal. Acento en la penúltima sílaba.
+    else {
+        let vowelCount = 0;
+        for (let i = normalized.length - 1; i >= 0; i--) {
+            if (vowels.includes(normalized[i])) {
+                vowelCount++;
+                if (vowelCount === 2) return i;
             }
+        }
+        // Si solo tiene una sílaba, esa es la tónica
+        for (let i = normalized.length - 1; i >= 0; i--) {
+            if (vowels.includes(normalized[i])) return i;
         }
     }
     
-    // Heurística para palabras agudas (acento en la última sílaba)
-    if (normalized.length > 3 && !vowels.includes(normalized[normalized.length-2])) {
-        stressedVowelIndex = lastVowelIndex;
-    }
+    return -1; // Fallback
+}
 
 
+// Obtiene la terminación relevante para la rima (desde la última vocal acentuada)
+const getRhymeEnding = (word: string): string => {
+    if (!word) return "";
+    const stressedVowelIndex = findStressedVowelIndex(word);
+    
     if (stressedVowelIndex !== -1) {
-        return normalized.substring(stressedVowelIndex);
+        return normalizeWord(word.substring(stressedVowelIndex));
     }
 
-    return normalized; // Fallback
+    return normalizeWord(word); // Fallback
 };
 
 
 // Compara si dos palabras riman (consonante)
 const doWordsRhyme = (word1: string, word2: string): boolean => {
-    if (!word1 || !word2) return false;
+    if (!word1 || !word2 || word1 === word2) return false;
     
     const ending1 = getRhymeEnding(word1);
     const ending2 = getRhymeEnding(word2);
 
-    // Consideramos rima si las terminaciones de 3 o más letras son idénticas
-    if (ending1.length >= 3 && ending1 === ending2) {
+    // Para rima consonante, la terminación debe ser idéntica y de al menos 2 caracteres.
+    if (ending1 && ending2 && ending1.length >= 2 && ending1 === ending2) {
         return true;
     }
-    // Rima asonante simple (mismas vocales)
-    const vowels = "aeiou";
-    const vowels1 = ending1.split('').filter(c => vowels.includes(c)).join('');
-    const vowels2 = ending2.split('').filter(c => vowels.includes(c)).join('');
 
-    return vowels1.length > 0 && vowels1 === vowels2;
+    return false;
 };
 
 // Genera el esquema de rimas para un texto completo
 export const getRhymeScheme = (text: string): AnalyzedLine[] => {
     const lines = text.split('\n');
     const lastWords = lines.map(getLastWord);
-    const rhymeGroups: string[][] = [];
+    const rhymeGroups: { representative: string, label: string }[] = [];
     const rhymeLabels = new Array(lines.length).fill("");
 
     for (let i = 0; i < lastWords.length; i++) {
-        if (!lastWords[i] || rhymeLabels[i] !== "") continue;
+        const currentWord = lastWords[i];
+        if (!currentWord || rhymeLabels[i]) continue;
 
         let foundGroup = false;
-        for (let j = 0; j < rhymeGroups.length; j++) {
-            if (doWordsRhyme(lastWords[i], rhymeGroups[j][0])) {
-                rhymeGroups[j].push(lastWords[i]);
-                rhymeLabels[i] = String.fromCharCode(65 + j); // 'A', 'B', 'C'...
+        // Intenta encontrar un grupo de rima existente
+        for (const group of rhymeGroups) {
+            if (doWordsRhyme(currentWord, group.representative)) {
+                rhymeLabels[i] = group.label;
                 foundGroup = true;
                 break;
             }
         }
 
+        // Si no se encontró grupo, crea uno nuevo
         if (!foundGroup) {
-            rhymeGroups.push([lastWords[i]]);
-            rhymeLabels[i] = String.fromCharCode(65 + rhymeGroups.length - 1);
+            const newLabel = String.fromCharCode(65 + rhymeGroups.length);
+            rhymeGroups.push({ representative: currentWord, label: newLabel });
+            rhymeLabels[i] = newLabel;
         }
     }
     
-     // Asignar etiquetas a las rimas encontradas
+    // Segunda pasada para asignar etiquetas a palabras que riman con nuevos grupos
     for (let i = 0; i < lastWords.length; i++) {
-        if (!lastWords[i] || rhymeLabels[i] !== "") continue;
-         for (let j = 0; j < rhymeGroups.length; j++) {
-             if (doWordsRhyme(lastWords[i], rhymeGroups[j][0])) {
-                 rhymeLabels[i] = String.fromCharCode(65 + j);
+        if (!lastWords[i] || rhymeLabels[i]) continue;
+         for (const group of rhymeGroups) {
+             if (doWordsRhyme(lastWords[i], group.representative)) {
+                 rhymeLabels[i] = group.label;
                  break;
              }
          }
