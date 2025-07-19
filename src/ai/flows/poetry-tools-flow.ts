@@ -34,6 +34,7 @@ const prompt = ai.definePrompt({
 The suggestions should be suitable for poetry, avoiding overly technical or obscure words unless they fit a creative context.
 For the word "{{word}}", provide a list of rhymes and a list of synonyms.
 Generate at least 5 rhymes and 5 synonyms if possible.
+All output must be in Spanish.
 `,
 });
 

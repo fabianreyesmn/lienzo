@@ -34,6 +34,7 @@ Your task is to provide a list of evocative and inspiring words based on a given
 The list should contain a rich variety of words: concrete nouns, abstract concepts, sensory details, verbs, and adjectives.
 Avoid clichés. Aim for originality and emotional resonance.
 Generate between 15 and 20 words for the theme: "{{theme}}".
+All output must be in Spanish.
 `,
 });
 
