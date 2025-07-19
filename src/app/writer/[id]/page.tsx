@@ -36,7 +36,7 @@ export default function WriterPage() {
     const [isSaving, setIsSaving] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const [panelWidth, setPanelWidth] = useState(320); // Default width in px (w-80)
+    const [panelWidth, setPanelWidth] = useState(400); // Default width in px
     const isResizing = useRef(false);
 
     const handleMouseDown = (e: React.MouseEvent) => {
