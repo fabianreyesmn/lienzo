@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, Loader2, BookCheck, History } from "lucide-react";
+import { Wand2, Loader2, BookCheck, History, BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { MetricsAnalyzer } from "./metrics-analyzer";
 import { VerseSnapshots } from "./verse-snapshots";
+import { EvocativeWordsGenerator } from "./evocative-words-generator";
 
 
 interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
@@ -65,7 +66,7 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
             </div>
             
             <ScrollArea className="flex-1">
-                 <div className="p-4 space-y-4">
+                 <div className="p-4 space-y-6">
                     <div>
                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
                             <BookCheck className="h-4 w-4" />
@@ -73,8 +74,6 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
                         </h3>
                         <MetricsAnalyzer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
                     </div>
-
-                    <Separator />
                     
                     <div>
                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
@@ -84,53 +83,69 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
                         <VerseSnapshots currentLine={currentLineText} />
                     </div>
 
+                    <div>
+                        <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <BrainCircuit className="h-4 w-4" />
+                            Inspiración Temática
+                        </h3>
+                        <EvocativeWordsGenerator />
+                    </div>
+
                     <Separator />
 
-                    <form onSubmit={handleSearch}>
-                         <div className="flex gap-2 mb-4">
-                            <Input 
-                                placeholder="Escribe una palabra..."
-                                value={word}
-                                onChange={(e) => setWord(e.target.value)}
-                                disabled={isLoading}
-                            />
-                            <Button type="submit" disabled={isLoading} size="icon" aria-label="Buscar sugerencias">
-                                {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                            </Button>
+                    <div>
+                        <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            Diccionario de Rimas y Sinónimos
+                        </h3>
+                        <form onSubmit={handleSearch}>
+                             <div className="flex gap-2 mb-4">
+                                <Input 
+                                    placeholder="Escribe una palabra..."
+                                    value={word}
+                                    onChange={(e) => setWord(e.target.value)}
+                                    disabled={isLoading}
+                                />
+                                <Button type="submit" disabled={isLoading} size="icon" aria-label="Buscar sugerencias">
+                                    {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </form>
+                        <div className="space-y-4">
+                            <Card>
+                                <CardHeader className="p-4">
+                                    <CardTitle className="text-base font-semibold">Rimas</CardTitle>
+                                    <CardDescription className="text-xs">Palabras que riman con &quot;{word || '...'}&quot;</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0">
+                                    <ScrollArea className="h-32">
+                                        {rhymes.length > 0 ? (
+                                            <ul className="text-sm space-y-1">
+                                                {rhymes.map((r, i) => <li key={i}>{r}</li>)}
+                                            </ul>
+                                        ) : (
+                                            <p className="text-xs text-muted-foreground h-full flex items-center justify-center">No se encontraron rimas.</p>
+                                        )}
+                                    </ScrollArea>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="p-4">
+                                    <CardTitle className="text-base font-semibold">Sinónimos</CardTitle>
+                                    <CardDescription className="text-xs">Palabras con significado similar.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="p-4 pt-0">
+                                    <ScrollArea className="h-32">
+                                    {synonyms.length > 0 ? (
+                                        <ul className="text-sm space-y-1">
+                                            {synonyms.map((s, i) => <li key={i}>{s}</li>)}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-xs text-muted-foreground h-full flex items-center justify-center">No se encontraron sinónimos.</p>
+                                    )}
+                                    </ScrollArea>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </form>
-
-                    <div className="space-y-4">
-                        <Card>
-                            <CardHeader className="p-4">
-                                <CardTitle className="text-base font-semibold">Rimas</CardTitle>
-                                <CardDescription className="text-xs">Palabras que riman con &quot;{word || '...'}&quot;</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-4 pt-0">
-                                {rhymes.length > 0 ? (
-                                    <ul className="text-sm space-y-1">
-                                        {rhymes.map((r, i) => <li key={i}>{r}</li>)}
-                                    </ul>
-                                ) : (
-                                    <p className="text-xs text-muted-foreground">No se encontraron rimas.</p>
-                                )}
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="p-4">
-                                <CardTitle className="text-base font-semibold">Sinónimos</CardTitle>
-                                <CardDescription className="text-xs">Palabras con significado similar.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="p-4 pt-0">
-                                {synonyms.length > 0 ? (
-                                    <ul className="text-sm space-y-1">
-                                        {synonyms.map((s, i) => <li key={i}>{s}</li>)}
-                                    </ul>
-                                ) : (
-                                    <p className="text-xs text-muted-foreground">No se encontraron sinónimos.</p>
-                                )}
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
             </ScrollArea>
