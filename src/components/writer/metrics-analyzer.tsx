@@ -23,7 +23,7 @@ export function MetricsAnalyzer({ content }: MetricsAnalyzerProps) {
     };
 
     return (
-        <Card className="bg-background/50">
+        <Card className="bg-background/50 overflow-hidden">
             <CardHeader className="p-4">
                 <div className="flex justify-between items-start">
                     <div>
@@ -37,13 +37,15 @@ export function MetricsAnalyzer({ content }: MetricsAnalyzerProps) {
             </CardHeader>
             {analysis && analysis.length > 0 && (
                 <CardContent className="p-4 pt-0">
-                    <ScrollArea className="h-[150px] w-full rounded-md border p-3 text-sm">
-                       {analysis.map((line, index) => (
-                           <div key={index} className="flex justify-between items-center">
-                               <span className="truncate text-muted-foreground flex-1 pr-4">{line.text || "·"}</span>
-                               <span className="font-bold text-primary w-6 text-center">{line.rhyme}</span>
-                           </div>
-                       ))}
+                    <ScrollArea className="h-[150px] w-full rounded-md border text-sm whitespace-nowrap">
+                       <div className="p-3">
+                         {analysis.map((line, index) => (
+                             <div key={index} className="flex justify-between items-center">
+                                 <span className="text-muted-foreground flex-1 pr-4">{line.text || "·"}</span>
+                                 <span className="font-bold text-primary w-6 text-center">{line.rhyme}</span>
+                             </div>
+                         ))}
+                       </div>
                     </ScrollArea>
                 </CardContent>
             )}
