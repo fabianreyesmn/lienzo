@@ -97,7 +97,7 @@ export function NewProjectDialog({ children, onProjectCreate }: NewProjectDialog
       }
     }}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md md:max-w-2xl">
+      <DialogContent className="sm:max-w-lg md:max-w-2xl">
         {step === 1 && (
           <>
             <DialogHeader>

@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,6 +17,11 @@ import { PoetryToolsPanel } from "@/components/writer/poetry-tools-panel";
 import { SongwritingToolsPanel } from "@/components/writer/songwriting-tools-panel";
 import { NoteToolsPanel } from "@/components/writer/note-tools-panel";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 interface ProjectData {
     title: string;
@@ -39,7 +44,7 @@ export default function WriterPage() {
     const [isSaving, setIsSaving] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const [panelWidth, setPanelWidth] = useState(500); // Default width in px
+    const [panelWidth, setPanelWidth] = useState(400); // Default width in px
     const isResizing = useRef(false);
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -52,7 +57,7 @@ export default function WriterPage() {
     const handleMouseMove = (e: MouseEvent) => {
         if (!isResizing.current) return;
         const newWidth = window.innerWidth - e.clientX;
-        if (newWidth > 250 && newWidth < 800) { // Min and max width
+        if (newWidth > 320 && newWidth < 800) { // Min and max width
             setPanelWidth(newWidth);
         }
     };
@@ -188,9 +193,10 @@ export default function WriterPage() {
         return null; // or a more specific "not found" component
     }
 
-    const renderToolsPanel = () => {
+    const renderToolsPanel = (isSheet = false) => {
         const panelProps = {
-             style:{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '800px' }
+             style: !isSheet ? { width: `${panelWidth}px`, minWidth: '320px', maxWidth: '800px' } : {},
+             isSheet
         };
 
         switch (project.type) {
@@ -225,7 +231,7 @@ export default function WriterPage() {
         <div className="flex h-screen overflow-hidden">
              <SonnerToaster />
             <div className="flex flex-col flex-1">
-                <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-10">
+                <header className="flex h-14 items-center gap-4 border-b bg-card px-4 md:px-6 sticky top-0 z-10">
                     <Button variant="outline" size="icon" asChild>
                         <Link href="/dashboard">
                             <ArrowLeft className="h-4 w-4" />
@@ -236,12 +242,25 @@ export default function WriterPage() {
                         <h1 className="font-headline text-lg font-semibold truncate">{project.title}</h1>
                         <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         {showSyllableCounter && <SyllableCounter lineText={currentLineText} />}
                         <Button onClick={handleSave} disabled={isSaving}>
-                            <Save className="mr-2 h-4 w-4" />
-                            {isSaving ? "Guardando..." : "Guardar"}
+                            <Save className="mr-0 md:mr-2 h-4 w-4" />
+                            <span className="hidden md:inline">{isSaving ? "Guardando..." : "Guardar"}</span>
                         </Button>
+                        {toolsPanel && (
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" size="icon" className="md:hidden">
+                                        <Wand2 className="h-4 w-4" />
+                                        <span className="sr-only">Abrir herramientas</span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="bottom" className="h-[80vh] flex flex-col">
+                                    {renderToolsPanel(true)}
+                                </SheetContent>
+                            </Sheet>
+                        )}
                     </div>
                 </header>
                 <main className="flex-1 overflow-auto">
@@ -267,13 +286,13 @@ export default function WriterPage() {
                 </main>
             </div>
             {toolsPanel && (
-                <>
+                <div className="hidden md:flex">
                     <div 
                         onMouseDown={handleMouseDown}
                         className="w-2 cursor-col-resize bg-border/50 hover:bg-primary/20 transition-colors"
                     />
                     {toolsPanel}
-                </>
+                </div>
             )}
         </div>
     );

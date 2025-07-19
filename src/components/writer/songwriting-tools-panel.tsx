@@ -13,12 +13,50 @@ interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
     selectedText: string;
     onContentChange: (newContent: string) => void;
+    isSheet?: boolean;
 }
 
-export function SongwritingToolsPanel({ editorContent, selectedText, onContentChange, ...props } : SongwritingToolsPanelProps) {
+export function SongwritingToolsPanel({ editorContent, selectedText, onContentChange, isSheet, ...props } : SongwritingToolsPanelProps) {
 
     const textToAnalyze = selectedText.trim() ? selectedText : editorContent;
+    
+    const mainContent = (
+        <div className="p-4 space-y-6">
+            <div>
+                 <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                    <BookCheck className="h-4 w-4" />
+                    Análisis de Rima
+                </h3>
+                <MetricsAnalyzer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
+            </div>
 
+            <Separator />
+            <SongStructureAssistant initialContent={editorContent} onStructureChange={onContentChange} />
+
+            <Separator />
+            <ChordProgressionGenerator />
+
+            <Separator />
+            <RhymeDictionary />
+         </div>
+    );
+
+    if (isSheet) {
+        return (
+            <div {...props} className="h-full flex flex-col">
+                <div className="p-4 border-b">
+                    <h2 className="text-lg font-headline flex items-center gap-2">
+                        <Music className="h-5 w-5 text-primary" />
+                        Herramientas de Compositor
+                    </h2>
+                </div>
+                <ScrollArea className="flex-1">
+                    {mainContent}
+                </ScrollArea>
+            </div>
+        );
+    }
+    
     return (
         <aside {...props} className="border-l bg-card h-full flex flex-col shrink-0">
             <div className="p-4 border-b">
@@ -29,24 +67,7 @@ export function SongwritingToolsPanel({ editorContent, selectedText, onContentCh
             </div>
             
             <ScrollArea className="flex-1">
-                 <div className="p-4 space-y-6">
-                    <div>
-                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                            <BookCheck className="h-4 w-4" />
-                            Análisis de Rima
-                        </h3>
-                        <MetricsAnalyzer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
-                    </div>
-
-                    <Separator />
-                    <SongStructureAssistant initialContent={editorContent} onStructureChange={onContentChange} />
-
-                    <Separator />
-                    <ChordProgressionGenerator />
-
-                    <Separator />
-                    <RhymeDictionary />
-                 </div>
+                 {mainContent}
             </ScrollArea>
         </aside>
     );
