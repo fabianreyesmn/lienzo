@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/dashboard/user-nav";
+import { ThemeSwitcher } from "@/components/dashboard/theme-switcher";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -58,7 +59,7 @@ export default function SettingsPage() {
           </div>
       </header>
       <main className="flex-1 overflow-auto p-4 md:p-8">
-        <div className="max-w-xl mx-auto">
+        <div className="max-w-xl mx-auto space-y-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline">Perfil</CardTitle>
@@ -87,6 +88,18 @@ export default function SettingsPage() {
                             {isSaving ? "Guardando..." : "Guardar Cambios"}
                         </Button>
                     </form>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline">Apariencia</CardTitle>
+                    <CardDescription>
+                        Elige el ambiente que más te inspire.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ThemeSwitcher />
                 </CardContent>
             </Card>
         </div>
