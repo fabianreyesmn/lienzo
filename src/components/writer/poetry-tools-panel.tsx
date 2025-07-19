@@ -61,8 +61,8 @@ export function PoetryToolsPanel({ editorContent, currentLineText, ...props }: P
                 </h2>
             </div>
             
-            <ScrollArea className="flex-1">
-                 <div className="p-4 space-y-4">
+            <ScrollArea className="flex-1 w-full" type="auto">
+                 <div className="p-4 space-y-4 min-w-max">
                     <div>
                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
                             <BookCheck className="h-4 w-4" />
