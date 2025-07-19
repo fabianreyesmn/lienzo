@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, Loader2, BookCheck, History, BrainCircuit, Sitemap } from "lucide-react";
+import { Wand2, Loader2, BookCheck, History, BrainCircuit, BarChartHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -70,7 +70,7 @@ export function PoetryToolsPanel({ editorContent, currentLineText, selectedText,
                  <div className="p-4 space-y-6">
                     <div>
                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                            <Sitemap className="h-4 w-4" />
+                            <BarChartHorizontal className="h-4 w-4" />
                             Visualizador de Estructura
                         </h3>
                         <PoemStructureVisualizer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
