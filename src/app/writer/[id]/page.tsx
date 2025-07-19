@@ -224,6 +224,7 @@ export default function WriterPage() {
                     />
                     <PoetryToolsPanel 
                         editorContent={content} 
+                        currentLineText={currentLineText}
                         style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '600px' }}
                     />
                 </>

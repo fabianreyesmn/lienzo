@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wand2, Loader2, BookCheck } from "lucide-react";
+import { Wand2, Loader2, BookCheck, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,13 +11,15 @@ import { getPoetrySuggestions } from "@/ai/flows/poetry-tools-flow";
 import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { MetricsAnalyzer } from "./metrics-analyzer";
+import { VerseSnapshots } from "./verse-snapshots";
 
 
 interface PoetryToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
+    currentLineText: string;
 }
 
-export function PoetryToolsPanel({ editorContent, ...props }: PoetryToolsPanelProps) {
+export function PoetryToolsPanel({ editorContent, currentLineText, ...props }: PoetryToolsPanelProps) {
     const [word, setWord] = useState("");
     const [rhymes, setRhymes] = useState<string[]>([]);
     const [synonyms, setSynonyms] = useState<string[]>([]);
@@ -60,28 +62,41 @@ export function PoetryToolsPanel({ editorContent, ...props }: PoetryToolsPanelPr
             </div>
             
             <ScrollArea className="flex-1">
-                 <div className="p-4">
-                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
-                        <BookCheck className="h-4 w-4" />
-                        Análisis de Métrica
-                    </h3>
-                    <MetricsAnalyzer content={editorContent} />
-                </div>
+                 <div className="p-4 space-y-4">
+                    <div>
+                        <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <BookCheck className="h-4 w-4" />
+                            Análisis de Métrica
+                        </h3>
+                        <MetricsAnalyzer content={editorContent} />
+                    </div>
 
-                <Separator className="my-2" />
+                    <Separator />
+                    
+                    <div>
+                        <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <History className="h-4 w-4" />
+                            Historial de Versos
+                        </h3>
+                        <VerseSnapshots currentLine={currentLineText} />
+                    </div>
 
-                <div className="p-4 pt-0">
-                    <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-                        <Input 
-                            placeholder="Escribe una palabra..."
-                            value={word}
-                            onChange={(e) => setWord(e.target.value)}
-                            disabled={isLoading}
-                        />
-                        <Button type="submit" disabled={isLoading} size="icon">
-                            {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 className="h-4 w-4" />}
-                        </Button>
+                    <Separator />
+
+                    <form onSubmit={handleSearch}>
+                         <div className="flex gap-2 mb-4">
+                            <Input 
+                                placeholder="Escribe una palabra..."
+                                value={word}
+                                onChange={(e) => setWord(e.target.value)}
+                                disabled={isLoading}
+                            />
+                            <Button type="submit" disabled={isLoading} size="icon" aria-label="Buscar sugerencias">
+                                {isLoading ? <Loader2 className="animate-spin" /> : <Wand2 className="h-4 w-4" />}
+                            </Button>
+                        </div>
                     </form>
+
                     <div className="space-y-4">
                         <Card>
                             <CardHeader className="p-4">
