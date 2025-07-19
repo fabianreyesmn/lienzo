@@ -36,7 +36,7 @@ export default function WriterPage() {
     const [isSaving, setIsSaving] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const [panelWidth, setPanelWidth] = useState(400); // Default width in px
+    const [panelWidth, setPanelWidth] = useState(500); // Default width in px
     const isResizing = useRef(false);
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -49,7 +49,7 @@ export default function WriterPage() {
     const handleMouseMove = (e: MouseEvent) => {
         if (!isResizing.current) return;
         const newWidth = window.innerWidth - e.clientX;
-        if (newWidth > 250 && newWidth < 600) { // Min and max width
+        if (newWidth > 250 && newWidth < 800) { // Min and max width
             setPanelWidth(newWidth);
         }
     };
@@ -225,7 +225,7 @@ export default function WriterPage() {
                     <PoetryToolsPanel 
                         editorContent={content} 
                         currentLineText={currentLineText}
-                        style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '600px' }}
+                        style={{ width: `${panelWidth}px`, minWidth: '250px', maxWidth: '800px' }}
                     />
                 </>
             )}
