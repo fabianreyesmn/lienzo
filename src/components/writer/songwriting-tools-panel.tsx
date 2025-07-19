@@ -1,18 +1,22 @@
 
 "use client";
 
-import { Music } from "lucide-react";
+import { Music, BookCheck } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChordProgressionGenerator } from "./chord-progression-generator";
 import { Separator } from "../ui/separator";
 import { SongStructureAssistant } from "./song-structure-assistant";
+import { MetricsAnalyzer } from "./metrics-analyzer";
 
 interface SongwritingToolsPanelProps extends React.HTMLAttributes<HTMLElement> {
     editorContent: string;
+    selectedText: string;
     onContentChange: (newContent: string) => void;
 }
 
-export function SongwritingToolsPanel({ editorContent, onContentChange, ...props } : SongwritingToolsPanelProps) {
+export function SongwritingToolsPanel({ editorContent, selectedText, onContentChange, ...props } : SongwritingToolsPanelProps) {
+
+    const textToAnalyze = selectedText.trim() ? selectedText : editorContent;
 
     return (
         <aside {...props} className="border-l bg-card h-full flex flex-col shrink-0">
@@ -25,9 +29,19 @@ export function SongwritingToolsPanel({ editorContent, onContentChange, ...props
             
             <ScrollArea className="flex-1">
                  <div className="p-4 space-y-6">
-                    <ChordProgressionGenerator />
+                    <div>
+                         <h3 className="text-sm font-semibold mb-2 flex items-center gap-2 text-muted-foreground">
+                            <BookCheck className="h-4 w-4" />
+                            Análisis de Rima
+                        </h3>
+                        <MetricsAnalyzer content={textToAnalyze} hasSelection={!!selectedText.trim()} />
+                    </div>
+
                     <Separator />
                     <SongStructureAssistant initialContent={editorContent} onStructureChange={onContentChange} />
+
+                    <Separator />
+                    <ChordProgressionGenerator />
                  </div>
             </ScrollArea>
         </aside>

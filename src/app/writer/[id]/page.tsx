@@ -204,6 +204,7 @@ export default function WriterPage() {
                  return <SongwritingToolsPanel 
                     {...panelProps} 
                     editorContent={content}
+                    selectedText={selectedText}
                     onContentChange={setContent}
                  />;
             default:
@@ -212,6 +213,7 @@ export default function WriterPage() {
     }
     
     const toolsPanel = renderToolsPanel();
+    const showSyllableCounter = project.type === "Poesía" || project.type === "Cancionero";
 
     return (
         <div className="flex h-screen overflow-hidden">
@@ -229,7 +231,7 @@ export default function WriterPage() {
                         <p className="text-sm text-muted-foreground">{getWordCount(content).toLocaleString()} palabras</p>
                     </div>
                     <div className="flex items-center gap-4">
-                        {project.type === "Poesía" && <SyllableCounter lineText={currentLineText} />}
+                        {showSyllableCounter && <SyllableCounter lineText={currentLineText} />}
                         <Button onClick={handleSave} disabled={isSaving}>
                             <Save className="mr-2 h-4 w-4" />
                             {isSaving ? "Guardando..." : "Guardar"}
